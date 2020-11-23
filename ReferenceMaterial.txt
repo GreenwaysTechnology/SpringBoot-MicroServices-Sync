@@ -1,0 +1,3087 @@
+Spring | Spring Framework:
+..........................
+
+Objective:
+->Spring makes it easy to create Java enterprise applications
+
+
+Early 2000, java started becoming more popular in distributed application developement.
+
+J2EE /JEE Spec:
+JEE Platform spec : containers /app containers/tools
+WebTechnology spec
+ Java servlet
+ JSP
+ JSF
+ Websocket
+ JSTL
+ EL
+Enterprise Application spec
+EJB
+JPA -ORM
+JMS
+JTA
+DI
+Context and DI
+Concurrency Util
+
+Web Services
+SOAP based  -JAX-WS
+REST Based  -JAX-RS
+
+Management and Security technologies
+Java EE Security spec
+Java Auth
+Java authorzation
+
+
+JAVA EE additional spec
+JMX -Jmeter,Spring Actuator
+
+////////////////////////////////////////////////////////////////////////////
+
+JEE enterprise application:
+............................
+
+Client Layer         Web Layer      Biz layer      Data Layer/Persistency
+
+Browser             Servlet/JSP      EJB               Entity Beans
+
+EJB :Enterprise Java Bean
+  Java Object can support distributed biz operations
+eg: incase of shopping cart
+  I have a bean(java object) which has three apis addToCart,Checkout,Payment)
+
+Api classifications:
+1.Session Bean  - to represent biz logic---jdbc--dml
+2.Enitity bean  -ORM - Object to Table mapping-First orm solution---Hibernate
+3.Message Driven Bean - Message driven systems-RabbitMQ,Kaffka,JMS
+
+Rod  was working in enterprise banking application with jee, he faced lot of complexity in designing ejb driven systems, so he decided to move ejb from JEE application, he wrote book called expert  J2EE ONE ON ONE design and development.
+
+He proposed a model  that model later on came as The project in "Spring Season" - Spring Framework.
+
+Client Layer         Web Layer      Biz layer      Data Layer/Persistency
+
+Browser             Spring         Spring              Spring-orm
+
+Spring development objective is "POJO".
+Plain Old Java Object
+When you build enterprise java apps, no plumbing(bolier plate code),Spring framework takes care that plumbing.
+
+Enterprise application challanges:
+
+1.Object Management
+
+IOC : Inversion of Control
+ Inversion -Do opposit
+ of Control -Management
+
+In enterprise application object creation and linking objects are so complex that should be removed from the developer.
+
+Someone should take care object creation and linking= 
+  =>This process is called as IOC.
+The IOC suggest the automation program,that program called as IOC Container.
+
+The first IOC Container
+1.PICO Container
+2.Spring container : It was born as enterprise container.
+
+Spring container takes care of object creations and object linking .
+Which is other wise called as "Dependency Injection" .
+ Dependency - HAS-A
+    injection - linking objects
+
+Spring Application:
+   The application is written in java technology, executed on Spring Container which is runtime for spring applications.spring container runs on jvm
+
+			  Spring Application
+				 |
+			   Spring Container
+				 |
+				JVM
+
+
+
+
+what is framework?
+   One Stop Solution
+ Collection of tools and technologies provided in one place to build end to end applications mostly.
+  
+What spring framework offers?
+
+ Spring offers collection of many projects
+
+1.Core:
+
+IoC container,
+Events, 
+Resources, 
+i18n,
+Validation,
+Data Binding,
+Type Conversion, 
+SpEL,
+AOP.
+
+Core Project
+1.XML driven
+2.Java Config Driven
+3.Boot Driven
+
+
+2.Web
+Web Servlet	
+ Spring MVC, WebSocket, SockJS, STOMP messaging.
+
+Web Reactive	
+  Spring WebFlux, WebClient, WebSocket.
+
+
+3.Data Access
+  SQL, NOSQL
+SQL:
+Transactions, DAO support, JDBC, ORM, Marshalling XML.
+NOSQL
+Mongodb....
+
+Integration	
+  Remoting, JMS, JCA, JMX, Email, Tasks, Scheduling, Cache.
+
+Languages	
+     Kotlin, Groovy, Dynamic languages.
+//////////////////////////////////////////////////////////////////////////////
+How to start Spring Project?
+
+1.Plain java project
+	Core
+2.Web Project
+    MVC
+
+Create Project:
+1.maven based
+2.gradle based
+
+..............................................................................
+Software Management tools:
+1.ANT,MAVEN,Gradle
+
+Maven:
+What is maven?
+
+ ->Apache Maven is a software project management and comprehension tool.
+ - Based on the concept of a project object model (POM).
+
+Software Management Task:
+1.Development
+ ->Project layouts
+ ->Project dependencies-libs(jars)
+    -one.jar1.0
+          ---->thirdparty.jar1.1
+ ->compile,jars/wars--->deploy on to the runtime
+.....
+2.Testing
+ -If you want to run automated testing
+
+3.Build/Production
+ -if you want to prepare final deployable applications
+    -app.jar , app.war, app.ear
+  fat jar
+//////////////////////////////////////////////////////////////////////////
+
+How to start with maven?
+->COMMAND Line -install maven
+->Eclipse Maven Integration
+///////////////////////////////////////////////////////////////////////////
+How maven has been implemented?
+
+Maven is java Program works with configuration file written in xml.
+
+ MAVEN-------XMLfile
+
+XML file contains information about automation task.
+
+xml file named pom.xml -Project Object Model
+
+pom.xml----is fed into java Program(maven)---extract xml elements---runs automation.
+///////////////////////////////////////////////////////////////////////////
+pom.xml basic structure:
+.........................
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>hellomaven</groupId>
+	<artifactId>hellomaven</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<name>hellomaven</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
+
+.............................................................................
+What is dependencies?
+  Project jar dependency
+
+   <dependency>
+     <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+     <version>3.8.1</version>
+     <scope>test</scope>
+  </dependency>
+  
+Maven will download all project libs(jars) from a site called "https://mvnrepository.com/"
+////////////////////////////////////////////////////////////////////////////
+
+Spring Project Dependency:
+.........................
+1.junit
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+    
+2.log4j - Required
+
+ <dependency>
+    <groupId>log4j</groupId>
+     <artifactId>log4j</artifactId>
+	<version>1.2.9</version>
+    </dependency>
+
+3.JDBC -MYSQL CONNECTOR
+
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+	<version>5.1.45</version>
+</dependency>
+
+4.COMMONS DBCP :Connection Pools implementation lib
+<dependency>
+  <groupId>commons-dbcp</groupId>
+  <artifactId>commons-dbcp</artifactId>
+  <version>1.4</version>
+</dependency>
+
+5.Spring Framework :Spring core lib
+    <dependency>
+     <groupId>org.springframework</groupId>
+     <artifactId>spring-context</artifactId>
+    <version>5.1.2.RELEASE</version>
+   </dependency>
+
+Spring Versions and features:
+
+2004 - Spring Framework 1.0 released
+– Champions dependency injection
+– Encourages POJOs
+– Uses XML files to describe application
+  configuration
+– Becomes popular quickly as an EJB
+  alternative
+
+• Spring 2.0 (2006):
+ – XML simplification, async JMS, JPA, AspectJ support
+
+• Spring 2.5 (2007, last release 2.5.6)
+  – Requires Java 1.4+ and supports JUnit 4
+  – Annotation DI, @MVC controllers, XML namespaces
+
+• Spring 3.x (3.2.17 released July 2013)
+
+   – Environment & Profiles, @Cacheable, @EnableXXX …
+   – Requires Java 1.5+ and JUnit 4.7+
+   – REST support, JavaConfig, SpEL, more annotations
+
+• Spring 4.x (released Dec 2016)
+    – Support for Java 8, @Conditional, Web-sockets
+
+• Spring 5.x (2017)
+   – Reactive programming focus
+
+//////////////////////////////////////////////////////////////////////////////
+Spring core concept:
+1.Spring Beans:
+  It is java class, based Java Bean standards
+ 	-class should be public
+ 	-properties should be private
+ 	-set and get methods
+	-constructors
+
+How to create simple Helloworld bean?
+
+
+Architecture:
+
+			POJO Classes(Bean)
+				 |
+    Spring-Application <====>SpringContainer
+      config file		 |
+		       Fullyconfigured System
+
+
+
+Spring-Application configuration Management:
+...........................................
+Spring application can be configured in many ways
+
+1.XML files - old and legacy.
+2.Java Config - latest  via Annotations
+ 2.1.AutoConfig
+    ->Spring boot
+3.Mix and Match is good idea.(XML + java config)
+
+
+Note : Config-file name can be anything. beans.xml
+
+
+basic beans.xml file
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- more bean definitions go here -->
+
+</beans>
+////////////////////////////////////////////////////////////////////////////
+<bean id="hello" class="com.ae.spring.beans.HelloWorld"></bean>
+
+
+
+			com.ae.spring.beans.HelloWorld(Bean)
+				 |
+            beans.xml    <====>SpringContainer
+      	   		         |
+		       Fullyconfigured System
+
+SpringContainer:
+
+ Spring Container is Java Program.
+ Spring Container is written based on Design pattern called Factory Design  Pattern
+
+			Factory------XML
+			  |
+		       new HelloWorld();
+			  |
+
+
+BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml")
+
+HelloWorld.java
+
+package com.ae.spring.beans;
+
+public class HelloWorld {
+	private String message;
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}
+
+
+beans.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- more bean definitions go here -->
+ <bean id="hello" class="com.ae.spring.beans.HelloWorld"></bean>
+</beans>
+
+
+App.java
+package com.ae.spring;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.beans.HelloWorld;
+
+/**
+ * Hello world!
+ *
+ */
+public class App {
+	public static void main(String[] args) {
+		// without Spring
+//		HelloWorld hello = new HelloWorld();
+//		hello.setMessage("Hello Spring World");
+//		System.out.println(hello.getMessage());
+		// With Spring
+		System.out.println("Spring is Ready Use");
+		BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml");
+		// Get The Bean from Factory
+		HelloWorld hello = factory.getBean("hello", HelloWorld.class);
+		hello.setMessage("Hello Spring Bean");
+		System.out.println(hello.getMessage());
+
+	}
+}
+////////////////////////////////////////////////////////////////////////////
+
+org.springframework.beans.factory.BeanFactory:
+   which is super interface in spring framework
+
+org.springframework.context.ApplicationContext
+	ApplicationContext factory =new ClassPathXmlApplicationContext("beans.xml");
+		// Get The Bean from Factory
+		HelloWorld hello = factory.getBean("hello", HelloWorld.class);
+		hello.setMessage("Hello Spring Bean");
+		System.out.println(hello.getMessage());
+///////////////////////////////////////////////////////////////////////////
+Dependency Injection:
+....................
+
+Dependency injection means setting class properties during runtime.
+
+eg: customer has a address
+
+class Address {
+
+}
+ class Customer {
+   private Address addr;
+  set
+  get
+  Customer(){}
+  Customer(Address addr){
+
+  }
+ }
+Address addr=new Address();
+Customer customer =new Customer(addr)
+ or
+customer.setAddr(addr)
+/////////////////////////////////////////////////////////////////////////////
+Spring bean definitions
+
+ <property name="message" value="Spring dependency Injection"/> -Setter Injection
+
+ <constructor-arg name="message" value="Hello Constructors"/> -Constructor
+
+beans.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- more bean definitions go here -->
+ <bean id="hello" class="com.ae.spring.beans.HelloWorld">
+   <property name="message" value="Hello Spring Dependency"/>
+ </bean>
+  <bean id="helloNew" class="com.ae.spring.beans.HelloWorld">
+    <constructor-arg name="message" value="Hello Constructors"/>
+ </bean>
+ 
+</beans>
+
+HelloWorld.java
+package com.ae.spring.beans;
+
+public class HelloWorld {
+	private String message;
+
+	public HelloWorld() {
+		// TODO Auto-generated constructor stub
+	}
+	public HelloWorld(String message) {
+		super();
+		this.message = message;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+}
+
+App.java
+package com.ae.spring;
+
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.beans.HelloWorld;
+
+/**
+ * Hello world!
+ *
+ */
+public class App {
+	public static void main(String[] args) {
+		// without Spring
+//		HelloWorld hello = new HelloWorld();
+//		hello.setMessage("Hello Spring World");
+//		System.out.println(hello.getMessage());
+		// With Spring
+		System.out.println("Spring is Ready Use");
+		//BeanFactory factory = new ClassPathXmlApplicationContext("beans.xml");
+		ApplicationContext factory =new ClassPathXmlApplicationContext("beans.xml");
+		// Get The Bean from Factory :via setters
+		//HelloWorld hello = factory.getBean("hello", HelloWorld.class);
+		//Get the Bean from Factory : via constructors
+		HelloWorld hello = factory.getBean("helloNew", HelloWorld.class);
+		//hello.setMessage("Hello Spring Bean");
+		System.out.println(hello.getMessage());
+
+	}
+}
+//////////////////////////////////////////////////////////////////////////////
+
+Lab:Create  User Bean class, properties are userid,userName,password,email,mobileno,location.
+
+Create Bean and set User bean properties via setter and constructors.
+////////////////////////////////////////////////////////////////////////////
+When to use Setter vs Constructor?
+
+Note: 
+ Constructor properties are initlized during object creations
+ Settter properties are initlized after object creations
+
+Spring supports both.You can mix and match.
+
+Constructors:
+  ->Enforce mandatory dependencies
+
+Setters:
+ 1.Allow optional dependenices
+
+//////////////////////////////////////////////////////////////////////////////Bean dependencies:
+.................
+
+If you set Object references 
+<property name="address" ref="address" />
+<constructor-arg ref="address"/>
+
+
+entities:
+com.ae.spring.entity
+
+package com.ae.spring.entites;
+
+public class Customer {
+	private int customerId;
+	private String name;
+	//dependancy
+	private Address address;
+
+	public Customer() {
+	}
+
+	public Customer(int customerId, String name, Address address) {
+		super();
+		this.customerId = customerId;
+		this.name = name;
+		this.address = address;
+	}
+
+	public int getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(int customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+}
+
+
+
+
+
+
+
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.entites.Customer;
+
+public class App {
+	public static void main(String[] args) {
+		ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		Customer customer = factory.getBean("customer", Customer.class);
+		System.out.println("Customer Id :" + customer.getCustomerId());
+		System.out.println("Customer Name :" + customer.getName());
+		System.out.println("Customer City :" + customer.getAddress().getCity());
+	}
+}
+
+
+Create Order Bean: orderid
+Customer has a an order...
+//////////////////////////////////////////////////////////////////////////
+Repository:
+..........
+com.ae.spring.repo
+
+
+com.ae.spring.repo.impl
+
+
+         CustomerServiceImpl
+			                ----CustomerInMemoryRepositoryImpl
+					|
+	CustomerRepository------->	|---CustomerJdbcRepositoryImpl
+					|
+					----CustomerJPARepositoryImpl
+
+
+
+package com.ae.spring.repo;
+
+import java.util.List;
+import com.ae.spring.entites.Customer;
+
+public interface CustomerRepository {
+	List<Customer> findAll();
+}
+
+
+
+
+package com.ae.spring.repo.impl;
+
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import com.ae.spring.entites.Customer;
+import com.ae.spring.repo.CustomerRepository;
+
+public class CustomerInMemoryRepositoryImpl implements CustomerRepository {
+
+	final Logger logger = LoggerFactory.getLogger(CustomerInMemoryRepositoryImpl.class);
+
+	public List<Customer> findAll() {
+		logger.info("CustomerInMemory-findAll");
+		return null;
+	}
+
+}
+
+
+package com.ae.spring.repo.impl;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ae.spring.entites.Customer;
+import com.ae.spring.repo.CustomerRepository;
+
+public class CustomerJPARepositoryImpl implements CustomerRepository {
+	final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepositoryImpl.class);
+
+	public List<Customer> findAll() {
+		logger.info("CustomerJPARepositoryImpl-findAll");
+
+		return null;
+	}
+
+}
+
+package com.ae.spring.repo.impl;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ae.spring.entites.Customer;
+import com.ae.spring.repo.CustomerRepository;
+
+public class CustomerJPARepositoryImpl implements CustomerRepository {
+	final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepositoryImpl.class);
+
+	public List<Customer> findAll() {
+		logger.info("CustomerJPARepositoryImpl-findAll");
+
+		return null;
+	}
+
+}
+package com.ae.spring.service;
+
+import java.util.List;
+
+import com.ae.spring.entites.Customer;
+
+public interface CustomerService {
+	List<Customer> findAll();
+
+}
+
+package com.ae.spring.service.impl;
+
+import java.util.List;
+
+import com.ae.spring.entites.Customer;
+import com.ae.spring.repo.CustomerRepository;
+import com.ae.spring.service.CustomerService;
+
+public class CustomerServiceImpl implements CustomerService {
+
+	private CustomerRepository repository;
+
+	public CustomerServiceImpl() {
+		
+	}
+
+	public CustomerRepository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(CustomerRepository repository) {
+		this.repository = repository;
+	}
+
+	public CustomerServiceImpl(CustomerRepository repository) {
+		super();
+		this.repository = repository;
+	}
+
+	public List<Customer> findAll() {
+
+		return repository.findAll();
+	}
+
+}
+beans.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="address" class="com.ae.spring.entites.Address">
+		<property name="doorNo" value="103" />
+		<property name="area" value="WhiteField" />
+		<property name="city" value="Banaglore" />
+	</bean>
+	<bean id="customer" class="com.ae.spring.entites.Customer">
+		<constructor-arg name="customerId" value="111" />
+		<constructor-arg name="name" value="Subramanian" />
+		<constructor-arg ref="address" />
+	</bean>
+	<bean id="inMemoryimpl"
+		class="com.ae.spring.repo.impl.CustomerInMemoryRepositoryImpl">
+	</bean>
+	<bean id="jdbcimpl"
+		class="com.ae.spring.repo.impl.CustomerJdbcRepositoryImpl">
+	</bean>
+	<bean id="jpaimpl"
+		class="com.ae.spring.repo.impl.CustomerJPARepositoryImpl">
+	</bean>
+	<bean id="customerService" class="com.ae.spring.service.impl.CustomerServiceImpl">
+		<constructor-arg ref="jpaimpl"/>
+	</bean>
+</beans>
+
+App.java
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.entites.Customer;
+import com.ae.spring.service.CustomerService;
+
+public class App {
+	public static void main(String[] args) {
+		ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+	CustomerService service = factory.getBean("customerService", CustomerService.class);
+		service.findAll();
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+
+DI Values:
+ You can inject primtives / scaller such as int,sting,char,boolean
+ You can inject Objects(reference types) - Customer,Order,Address,Repository
+ You can inject Collection types - such as List,Map,Set...
+
+Proerty can have child elements:List
+<property name="shippingAddress">
+	<list>
+		<ref bean="address" />
+		<ref bean="address" />
+		<ref bean="address" />
+		<ref bean="address" />
+		<ref bean="address" />
+		<ref bean="address" />
+	</list>
+</property>
+
+or via constructor
+	<constructor-arg name="orders">
+			<list>
+				<ref bean="orderA" />
+				<ref bean="orderB" />
+				<ref bean="orderC" />
+			</list>
+		</constructor-arg>
+
+<list> -ArrayList
+
+List<Address> shippingAddress=new ArrayList<Address>
+shippingAddress.add(address);
+
+/////////////////////////////////////////////////////////////////////////////
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="address" class="com.ae.spring.entites.Address">
+		<property name="doorNo" value="103" />
+		<property name="area" value="WhiteField" />
+		<property name="city" value="Banaglore" />
+	</bean>
+
+	<bean id="orderA" class="com.ae.spring.entites.Order">
+		<property name="orderId" value="1"></property>
+		<property name="orderValue" value="1000"></property>
+	</bean>
+
+	<bean id="orderB" class="com.ae.spring.entites.Order">
+		<property name="orderId" value="2"></property>
+		<property name="orderValue" value="6000"></property>
+	</bean>
+
+
+	<bean id="orderC" class="com.ae.spring.entites.Order">
+		<property name="orderId" value="3"></property>
+		<property name="orderValue" value="10000"></property>
+	</bean>
+
+	<bean id="customer" class="com.ae.spring.entites.Customer">
+		<constructor-arg name="customerId" value="111" />
+		<constructor-arg name="name" value="Subramanian" />
+		<constructor-arg ref="address" />
+		<constructor-arg name="orders">
+			<list>
+				<ref bean="orderA" />
+				<ref bean="orderB" />
+				<ref bean="orderC" />
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="inMemoryimpl"
+		class="com.ae.spring.repo.impl.CustomerInMemoryRepositoryImpl">
+	</bean>
+	<bean id="jdbcimpl"
+		class="com.ae.spring.repo.impl.CustomerJdbcRepositoryImpl">
+	</bean>
+	<bean id="jpaimpl"
+		class="com.ae.spring.repo.impl.CustomerJPARepositoryImpl">
+	</bean>
+	<bean id="customerService"
+		class="com.ae.spring.service.impl.CustomerServiceImpl">
+		<constructor-arg ref="jpaimpl" />
+	</bean>
+</beans>
+
+Order.java
+package com.ae.spring.entites;
+
+public class Order {
+	private int orderId;
+	private float orderValue;
+
+	public Order() {
+	}
+	
+	public Order(int orderId, float orderValue) {
+		super();
+		this.orderId = orderId;
+		this.orderValue = orderValue;
+	}
+
+
+	public int getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	public float getOrderValue() {
+		return orderValue;
+	}
+
+	public void setOrderValue(float orderValue) {
+		this.orderValue = orderValue;
+	}
+
+}
+
+Customer.java
+package com.ae.spring.entites;
+
+import java.util.List;
+
+public class Customer {
+	private int customerId;
+	private String name;
+	//dependancy
+	private Address address;
+	
+	//one to many : one customer can have many orders
+	private List<Order> orders;
+
+
+	public Customer() {
+	}
+
+	public Customer(int customerId, String name, Address address, List<Order> orders) {
+		super();
+		this.customerId = customerId;
+		this.name = name;
+		this.address = address;
+		this.orders = orders;
+	}
+	
+	public List<Order> getOrders() {
+		return orders;
+	}
+
+	public void setOrders(List<Order> orders) {
+		this.orders = orders;
+	}
+
+
+	public int getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(int customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+}
+App.java
+package com.ae.spring;
+
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.entites.Customer;
+import com.ae.spring.entites.Order;
+import com.ae.spring.service.CustomerService;
+
+public class App {
+	public static void main(String[] args) {
+		ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		Customer customer = factory.getBean("customer", Customer.class);
+		System.out.println("Customer Id :" + customer.getCustomerId());
+		System.out.println("Customer Name :" + customer.getName());
+		System.out.println("Customer City :" + customer.getAddress().getCity());
+		List<Order> orders = customer.getOrders();
+		System.out.println("Order History");
+		for (Order order : orders) {
+			System.out.println(" Order Id : " + order.getOrderId() + " Order Value " + order.getOrderValue());
+		}
+
+	}
+}
+/////////////////////////////////////////////////////////////////////////////
+
+Bean Definitions:
+1.How to create bean 
+   class,factory-method
+
+2.How to name beans?
+   id,name,alias
+
+3.scope of the beans? : visibility of the bean
+   singleton,prototype,
+   request,session,application,websocket
+
+4.Dependence Injections
+   constructor
+   setter
+   autowire
+
+5.Lazy initialization mode
+ controlling bean creations
+  eagar-default
+  lazy-ondemand
+  lazy-init="true"
+
+5.How to simplify bean injections? 
+   Autowiring mode 
+ no,byName,byType,constructor   
+
+//////////////////////////////////////////////////////////////////////////////
+1.How to create bean 
+   class,factory-method
+
+Who is creating bean in General?
+ SpringContainer
+
+Can i create Bean by telling SpringContainer?
+ !Yes
+Via factory-method
+
+factory-method:
+   The method which is provided inside Bean Class,through which you can create
+Bean instances?
+
+public class AuthService{
+  private String userName,password;
+  private AuthService(){
+
+  }   
+
+}
+AuthService auth=new AuthService();
+
+eg:
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+	<bean id="authService"
+	  class="com.ae.spring.beans.custom.AuthService"
+	   factory-method="getInstance"/>
+</beans>
+
+package com.ae.spring.beans.custom;
+
+public class AuthService {
+	private String userName = "admin";
+	private String password = "admin";
+
+	private AuthService() {
+
+	}
+
+	// Factory Api
+	public static AuthService getInstance() {
+		return new AuthService();
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	// Biz Api
+	public boolean login(String userName, String password) {
+		if (this.getUserName().equals(userName) && this.getPassword().equals(password)) {
+
+			return true;
+		}
+		return false;
+	}
+
+}
+
+
+
+
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.beans.custom.AuthService;
+
+public class App {
+	public static void main(String[] args) {
+//		AuthService auth = AuthService.getInstance();
+//		auth.setUserName("admin");
+//		auth.setPassword("xx");
+//		boolean isAuth = auth.login("admin", "admin");
+//		System.out.println(isAuth ? "Valid" : "Not Valid");
+		ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		AuthService auth=factory.getBean("authService",AuthService.class);
+		auth.setUserName("admin");
+		auth.setPassword("admin");
+		boolean isAuth = auth.login("admin", "admin");
+		System.out.println(isAuth ? "Valid" : "Not Valid");
+
+	}
+}
+/////////////////////////////////////////////////////////////////////////////
+id and alias:
+.............
+id property in bean definition enusers that you cant have more than one id.
+ id indicates the reference variable.
+
+/////////////////////////////////////////////////////////////////////////////
+
+Scopes:
+ Generally, you can create multiple instance from bean definition.
+  some times if you want to control that bean creation
+you can use bean creation scope.
+
+Spring supports 6 scopes:
+1.singleton
+ (Default) Scopes a single bean definition to a single object instance for each Spring IoC container.
+ if you call getBean no of time, spring returns the only one instance at any point of time.
+This is default scope.
+
+public class ClientService {
+
+	public void findAll() {
+		System.out.println("Client Service-findAll");
+	}
+}
+
+<bean id="clientService" class="com.ae.spring.beans.custom.ClientService" scope="singleton">
+</bean>
+	ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		ClientService clientService = null;
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+		
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+		
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+
+
+
+2.prototype:
+a new bean instance every time a request for that specific bean is made 
+hat is, the bean is injected into another bean or you request it through a getBean() method call on the container.
+
+<bean id="clientService" 
+	class="com.ae.spring.beans.custom.ClientService"
+	 scope="prototype">
+
+	ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		ClientService clientService = null;
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+		
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+		
+		clientService = factory.getBean("clientService", ClientService.class);
+		System.out.println(clientService.hashCode());
+
+
+Web Scope:
+3.request 
+ <bean id="flight" class="com.ae.trip.entity.Fight" scope="request"/>
+	HttpServletRequest req;
+	req.setAttribute("flight",flight)
+	
+	->Servlet--->Servlet---Servlet---NServlet---jsp
+	->Servlet----jsp---Servlet--->Servlet--Jps....
+4.session
+	Single User multiple request,storing data about single User
+	HttpSession session;
+	session.setAttribute("flight",flight)
+      <bean id="flight" class="com.ae.trip.entity.Fight" scope="session"/>
+	User---ShoppingCart
+	User---CheckoutScreen
+	User---PaymentScren
+5.application
+	Global Data, eg Offers for all users in the web site
+	ServletContext ctx;
+	ctx.setAttribute("flight",flight)
+	<bean id="offer" class="com.ae.trip.entity.Offer" scope="application"/>
+6.websocket
+
+ ->The request, session, application, and websocket scopes are available only if you use a web-aware Spring ApplicationContext implementation (such as XmlWebApplicationContext)
+
+////////////////////////////////////////////////////////////////////////////
+Dependency Injections:
+ ->property - setter injections
+ ->constructor-arg ref ->constructor injections
+ 
+->autowire 
+Which is not new injection type, but it simplifies property and constructor injections
+
+     no ->Explicit via property or constructor-arg
+     byName - Implicit via property
+     byType - Implicit via type + property
+     constructor - Implicit via constructor
+
+Lab:
+
+Customer
+    |
+    Account
+    Address ---->via autowire
+
+//////////////////////////////////////////////////////////////////////////////
+
+Bean initalization /Creations:
+.............................
+Spring container creates objects(beans) in advance during spring container startup - 
+	Application context tries to parse "beans.xml" file.
+ This process is called  "Eager initizlation".
+ The default initalization is eager
+
+During getBean call if bean is created , that is we call "Lazy".
+
+eg:
+<bean id="customer" lazy-init="true" class="com.ae.spring.entity.Customer"/>
+
+
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.entity.Customer;
+
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	System.out.println("Spring container started");
+		ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		factory.getBean("customer",Customer.class);
+		System.out.println("Spring container is closed");
+    }
+}
+
+Container-level:
+<beans default-lazy-init="true">
+    <!-- no beans will be pre-instantiated... -->
+</beans>
+////////////////////////////////////////////////////////////////////////////
+Bean life cycles:
+.................
+init
+destroy
+
+Points:
+1.if you want to initalize the resources,
+ Resources:
+   Resource is nothing but ,something outside jvm
+    ex: FileSystem,Databases,Network sockets,Graphics context....
+  Resources must be mananaged properly , if not , it will give you
+ memory leaks.
+
+In general , resources are initialized inside Class constructors
+eg:Establishing database,socket connections, create file points,open file
+
+According to spring best practices, dont do it inside constructor
+ Why
+   WHich hindrences the bean intialization, which will drop app startup performance.
+
+then where can i initlaize
+ spring provides life cycle hooks
+   ->init-method="initmethod"
+   ->destroy-method="destroymethod" - Resouce clean up
+
+patterns to implement life hooks
+
+1.init && destroy
+  can be implemented via config file
+
+public class ClientService {
+
+	public ClientService() {
+		System.out.println("ClientService : Constructor is called");
+	}
+	//life cycle hooks
+	public void init() {
+		System.out.println("ClientService : Bean init is called");
+	}
+	public void destroy() {
+		System.out.println("ClientService : Bean destory is called");
+	}
+	
+	
+}
+ <bean id="clientService" init-method="init" destroy-method="destroy" class="com.ae.spring.service.ClientService"/>
+
+2.via interface :DisposableBean,InitializingBean
+
+ <bean id="dbService" class="com.ae.spring.service.DatabaseService"/>
+
+package com.ae.spring.service;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class DatabaseService implements DisposableBean,InitializingBean {
+
+	public void destroy() throws Exception {
+		System.out.println("DatabaseService : Bean destory is called");
+
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		// TODO Auto-generated method stub
+		System.out.println("DatabaseService : Bean init is called");
+
+	}
+
+}
+3.IF you want to set init and destroy method across the project
+ instead of setting init and destroy at bean level
+
+ <beans default-destroy-method="destroy" default-init-method="init" xmlns="http://www.springframework.org/schema/beans"
+
+    <bean id="blogService" class="com.something.DefaultBlogService">
+        <property name="blogDao" ref="blogDao" />
+    </bean>
+
+</beans>
+.............................................................................
+How to call destroy hook method on bean?
+
+BeanFactory
+ |
+org.springframework.context.ApplicationContext
+ |
+->org.springframework.context.ConfigurableApplicationContext
+   |
+  registerShutdownHook();------->destroy method
+
+beans.xml
+<bean id="clientService" init-method="init" destroy-method="destroy" class="com.ae.spring.service.ClientService" />
+
+
+package com.ae.spring;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import com.ae.spring.service.ClientService;
+
+public class App {
+	public static void main(String[] args) {
+		// ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		ConfigurableApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+		factory.getBean("clientService",ClientService.class);
+		factory.registerShutdownHook();
+	}
+}
+/////////////////////////////////////////////////////////////////////////////
+
+Types of Beans:
+..............
+1.Resuable bean
+
+2.Inner beans
+
+Address.java
+package com.ae.spring.entity;
+
+public class Address {
+	private String city;
+	private String state;
+
+	public Address() {
+	}
+
+	public Address(String city, String state) {
+		super();
+		this.city = city;
+		this.state = state;
+	}
+
+	public String getCity() {
+		return city;
+	}
+
+	public void setCity(String city) {
+		this.city = city;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
+}
+Customer.java
+package com.ae.spring.entity;
+
+public class Customer {
+	private int customerId;
+	private String customerName;
+	private Address address;
+	private Order order;
+
+	public Customer() {
+	}
+
+	public Customer(int customerId, String customerName, Address address, Order order) {
+		super();
+		this.customerId = customerId;
+		this.customerName = customerName;
+		this.address = address;
+		this.order = order;
+	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+	public int getCustomerId() {
+		return customerId;
+	}
+
+	public void setCustomerId(int customerId) {
+		this.customerId = customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+}
+Employee.java
+package com.ae.spring.entity;
+
+public class Employee {
+	private int empId;
+	private String empName;
+	private Address address;
+
+	public Employee() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public int getEmpId() {
+		return empId;
+	}
+
+	public void setEmpId(int empId) {
+		this.empId = empId;
+	}
+
+	public String getEmpName() {
+		return empName;
+	}
+
+	public void setEmpName(String empName) {
+		this.empName = empName;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public Employee(int empId, String empName, Address address) {
+		super();
+		this.empId = empId;
+		this.empName = empName;
+		this.address = address;
+	}
+
+}
+Order.java
+package com.ae.spring.entity;
+
+public class Order {
+	private int orderId;
+	private double value;
+
+	public Order() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public Order(int orderId, double value) {
+		super();
+		this.orderId = orderId;
+		this.value = value;
+	}
+
+	public int getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+}
+beans.xml
+	<!-- Resuable bean -->
+	<bean id="address" class="com.ae.spring.entity.Address" />
+
+	<bean id="employee" class="com.ae.spring.entity.Employee">
+		<property name="address" ref="address"></property>
+	</bean>
+	<bean id="customer" class="com.ae.spring.entity.Customer">
+		<property name="address" ref="address"></property>
+		<!-- inner beans -->
+		<property name="order">
+			<bean id="tempOrder" class="com.ae.spring.entity.Order">
+				<property name="orderId" value="3"></property>
+				<property name="value" value="10000"></property>
+			</bean>
+		</property>
+////////////////////////////////////////////////////////////////////
+Container extension Points: Enhancing the Spring Container
+.........................................................
+
+Typically, an application developer does not need to subclass  ApplicationContext implementation classes.
+ Instead, the Spring IoC container can be extended by plugging in implementations of special integration interfaces. 
+
+Spring core System:
+
+		  Spring Application
+			|	
+ 	    Configuration Management System
+		 (tools-XML,Annotations)
+		-------------------------
+		|			|
+		| Spring IOC Container  |
+		------------------------
+			|
+		       JVM
+
+ How to add extensions(plugins) on to the Existing Spring Container?
+
+
+ 		 Spring Application
+			|	
+ 	    Configuration Management System
+		 (tools-XML,Annotations)
+		-------------------------
+		|			|--->Extensions
+					|    1.BeanPostProcessor 
+		|			|
+		|			|
+		| 			|
+		| Spring IOC Container  |
+		|			|
+		|			|	
+		|			|
+		|		        |
+		------------------------
+			|
+		       JVM
+
+BeanPostProcessor: Extensions
+..................
+  BeanPostProcessor are classes that tells Spring what should be done after beans are created.
+
+
+How to implement extension?
+
+Steps:
+1.Declare class
+public class BeanPostProcessorExtension {
+
+}
+2.implement BeanPostProcessor interface
+package com.ae.spring.extensions;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+
+public class BeanPostProcessorExtension implements BeanPostProcessor {
+
+	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		System.out.println("postProcessAfterInitialization : " + bean + " " + beanName);
+		return bean;
+	}
+
+	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		System.out.println("postProcessBeforeInitialization : " + bean + " " + beanName);
+		return bean;
+	}
+
+}
+
+beans.xml
+<bean class="com.ae.spring.extensions.BeanPostProcessorExtension"/>
+/////////////////////////////////////////////////////////////////////////////
+2.BeanFactoryPostProcessor : Container Extension, where we instrument container itself.
+
+package com.ae.spring.extensions;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+
+public class FactoryBeanPostProcessorExtension implements BeanFactoryPostProcessor {
+
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+
+		System.out.println("Container Extensions : " + beanFactory);
+
+	}
+
+}
+
+beans.xml
+  <bean class="com.ae.spring.extensions.FactoryBeanPostProcessorExtension"/>
+////////////////////////////////////////////////////////////////////////////
+Spring provides lot of built in Extensions
+...........................................
+
+PropertyPlaceholderConfigurer :
+   It is used to externalize the bean property values
+eg:
+
+Bean defintion file
+<bean id="customer" class="com.ae.spring.entity.Customer"
+  <property name="customerId" value="100">
+</bean>
+
+With PropertyPlaceHolder = ${propertykey} => propValue
+eg: 
+<bean id="customer" class="com.ae.spring.entity.Customer"
+  <property name="customerId" value="${customer.id}">
+</bean>
+
+PropertyPlaceholderConfigurer 
+
+classpath:customer-info.properties
+customer.id=1
+customer.name=Ram
+
+eg:
+Steps:
+1.property file
+src/main/java/customer-info.properties
+customer.id=1
+customer.name=Ram
+2.Activate Extension to read Property file
+  ->
+<beanclass="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations" value="classpath:customer-info.properties" />
+</bean>
+
+3.Read Property value:
+		ApplicationContext context = new ClassPathXmlApplicationContext("beans.xml");
+		Customer customer = context.getBean("customer", Customer.class);
+		System.out.println(customer.getId() + " " + customer.getName());
+//////////////////////////////////////////////////////////////////////////////
+
+Annotation-based Container Configuration:
+.........................................
+An alternative to XML setup is provided by annotation-based configuration, which relies on the bytecode metadata for wiring up components instead of angle-bracket declarations.
+
+Problems with XML Configuration:
+
+1.XML is so complex to maintain when app grows.
+   -In general we can have multiple configurations
+  like
+	projectname-dao.xml
+	cleartrip.dao.xml 
+        cleartrip.service.xml
+        cleartrip.entitis.xml
+	cleartrip.beans.xml
+via Program:
+ConfigurableApplicationContext context = ClassPathXmlApplicationContext("bank-app.xml","account-repo.xml");
+
+or
+ConfigurableApplicationContext context = new ClassPathXmlApplicationContext
+new String[] { "bank-app.xml", "account-repo.xml" });
+
+2.Parsing XML is heavy weight
+
+   beans.xml -----Parser---Extracts data---Prepares Application.
+
+Solution:
+  Annotations
+
+1.Annotations are Program level,no spearate file-Maintaince will be less
+2.Annotations are itself Program,so executed by jvm directly so performance 
+  will be great
+3.It promotes clean Code.
+
+How Spring Container supports Annotation based Programming?
+
+
+Annotation Spec from JCP + Spring Team Annoations
+
+ JSR-250: Common Annotations for the JavaTM Platform
+
+   |
+Source code 
+Annotations -------> APT Extension -----> Source code + Annotation 						          logic               
+
+Simple annotation:
+
+@Required  
+  Which enforces the depedencies must be configured in beans.xml file.
+
+<bean class="Order">
+<bean class="Customer">
+  
+</bean>
+
+Add the "Apt" Activitator
+<bean
+class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+
+Eg:
+beans.xml
+	<bean id="order" class="com.ae.spring.entity.Order" />
+	<bean id="customer" class="com.ae.spring.entity.Customer">
+	   
+	</bean>
+<bean
+class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor" />
+
+
+package com.ae.spring.entity;
+
+public class Order {
+	private int orderId;
+	private double value;
+
+	public int getOrderId() {
+		return orderId;
+	}
+
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+}
+
+
+
+package com.ae.spring.entity;
+
+import org.springframework.beans.factory.annotation.Required;
+
+public class Customer {
+	private int id;
+	private Order order;
+
+	public Customer() {
+	}
+
+	public Customer(int id, Order order) {
+		super();
+		this.id = id;
+		this.order = order;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public Order getOrder() {
+		return order;
+	}
+
+	@Required
+	public void setOrder(Order order) {
+		this.order = order;
+	}
+
+}
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.entity.Customer;
+
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	ApplicationContext factory = new ClassPathXmlApplicationContext("beans.xml");
+    	Customer customer=factory.getBean("customer",Customer.class);
+    	System.out.println(customer.getOrder());
+    }
+}
+
+
+Note: if you run the above with that configuration,spring will throw error.
+
+Caused by: org.springframework.beans.factory.BeanInitializationException: Property 'order' is required for bean 'customer'
+
+How to fix? 
+ you need to refer the required dependency.
+
+beans.xml
+<bean id="order" class="com.ae.spring.entity.Order" />
+	<bean id="customer" class="com.ae.spring.entity.Customer">
+   <property name="order" ref="order"></property>
+</bean>
+///////////////////////////////////////////////////////////////////////////
+
+Common Annotations:
+1.RequiredAnnotationBeanPostProcessor - @Required
+2.AutowiredAnnotationBeanPostProcessor  -@Autowrited
+3.CommonAnnotationBeanPostProcessor  -@Common
+4.PersistenceAnnotationBeanPostProcessor -@Entity
+etc....
+////////////////////////////////////////////////////////////////////////////
+
+AutowiredAnnotationBeanPostProcessor :@Autowired Annotation:
+............................................................
+
+Use case 1: Setter Injection
+
+@Autowired Annotation is used on property/field/instance variable,it is understood that "byName" -Setter Injection
+
+@Autowired
+private Project project;
+
+@Autowired Annotation is used on setXXX method,it is understood that "byName" 
+
+-Setter Injection
+ @Autowired
+ public void setProject(Project project) {
+  this.project = project;
+ }
+//////////////////////////////////////////////////////////////////////////////
+@Autowired Annotation dependency Injection Resolutions:
+
+<bean id="account" class="com.ae.spring.entity.Account">
+</bean> 
+
+<bean id="customer" class="com.ae.spring.entity.Customer">
+</bean>
+
+Account.java
+
+private Customer customer;
+@Autowired
+public void setCustomer(Customer customer) {
+  this.customer = customer;
+}
+Here depedency is resolved by name automatically.
+////////////////////////////////////////////////////////////////////////////
+What if the bean name and config name is different
+
+Use case 2: different names
+
+<bean id="account" class="com.ae.spring.entity.Account">
+</bean> 
+
+<bean id="customerA" class="com.ae.spring.entity.Customer">
+</bean>
+
+In Source Code:
+Account.java
+
+private Customer customer;
+@Autowired
+public void setCustomer(Customer customer) {
+  this.customer = customer;
+}
+
+Here dependency is resolved  "by type".
+
+/////////////////////////////////////////////////////////////////////////////
+
+Use case : 3
+What if the bean name and config name is different with same type of more bean declarations?
+
+<bean id="account" class="com.ae.spring.entity.Account"/>
+
+<bean id="customerA" class="com.ae.spring.entity.Customer"/>
+<bean id="customerB" class="com.ae.spring.entity.Customer" />
+<bean id="customerC" class="com.ae.spring.entity.Customer" />
+
+In Source Code:
+Account.java
+
+private Customer customer;
+@Autowired
+public void setCustomer(Customer customer) {
+  this.customer = customer;
+}
+
+This code will throw Exception:org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'account': Unsatisfied dependency expressed through method 'setCustomer' parameter 0; nested exception is org.springframework.beans.factory.NoUniqueBeanDefinitionException:
+
+The reason the container will try to create object based on type but found more bean definitions with same type.
+
+
+Then what is solution:
+
+There are two solutions:
+
+1.You can change the name of the bean config
+<bean id="account" class="com.ae.spring.entity.Account"/>
+old config:
+<bean id="customerA" class="com.ae.spring.entity.Customer"/>
+new config:solution
+<bean id="customer" class="com.ae.spring.entity.Customer"/>
+
+But you cant have multiple bean declarations: looks like old style.
+
+In Source Code:
+Account.java
+
+private Customer customer;
+@Autowired
+public void setCustomer(Customer customer) {
+  this.customer = customer;
+}
+
+Note: 
+ Spring initallly looks up based on name,then type,if name does not match,see type,if more type then err.
+
+What if more same  type bean,want to inject based on type then use "Qualifier".
+
+Note: in order to activate Qualifier you need to add Qualifier org.springframework.beans.fa,ctory.annotation.QualifierAnnotationAutowireCandidateResolver
+
+After adding this Annotation also, The applicaiton is throwing error, the resaon this QualifierAnnotationAutowireCandidateResolver has internal depedency that also must spcified.
+
+Like if dependency keep on growing, it is complex to remember and configer in beans.xml.
+
+
+Solution :
+
+Automation : Auto Scanning and bean creations
+
+   <context:annotation-config/>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+       <context:annotation-config/>
+
+	<bean id="order" class="com.ae.spring.entity.Order" />
+
+	<bean id="customerA" class="com.ae.spring.entity.Customer">
+		<property name="order" ref="order"></property>
+		<qualifier value="main" />
+	</bean>
+	<bean id="customerB" class="com.ae.spring.entity.Customer">
+		<property name="order" ref="order"></property>
+	</bean>
+	<bean id="customerC" class="com.ae.spring.entity.Customer">
+		<property name="order" ref="order"></property>
+	</bean>
+	<bean id="account" class="com.ae.spring.entity.Account">
+	</bean>
+
+	<bean id="project" class="com.ae.spring.entity.Project"></bean>
+	<bean id="employee" class="com.ae.spring.entity.Employee">
+
+	</bean>
+
+	
+</beans>
+/////////////////////////////////////////////////////////////////////////////
+@Autowired Inside constructor:
+
+<bean id="customerB" class="com.ae.spring.entity.Customer">
+		<qualifier value="other" />
+
+</bean>
+
+Account.java
+	Account(@Qualifier("other") Customer customer) {
+		this.customer = customer;
+	}
+
+////////////////////////////////////////////////////////////////////////////
+JSR 250 Annotations:
+....................
+Resource, PostConstruct and PreDestroy.
+
+package com.ae.spring.service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+public class ClientService {
+
+	@PostConstruct
+	public void init() {
+		System.out.println("init");
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println("destroy");
+	}
+}
+
+App.java
+	ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
+		ClientService service = ctx.getBean("clientService", ClientService.class);
+		ctx.registerShutdownHook();
+
+
+beans.xml
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+     <context:annotation-config/>
+
+    <bean id="clientService" class="com.ae.spring.service.ClientService"/>
+</beans>
+//////////////////////////////////////////////////////////////////////////////
+How to eleminate the bean creations from beans.xml file
+
+<bean id="clientService" class="com.ae.spring.service.ClientService"/>
+
+
+Stereotype Annotations:
+
+Stereotype: "Same type of things but it adds extra behaviour based on context"
+
+@Component
+
+What is Component?
+
+The term coined by Microsoft in 1989.
+In Object Oriented System Every thing is Object
+The Term object is more general term.
+
+Component is also Object(Bean) in spring context
+  ->It is resulable
+  ->follows all java bean standards
+
+In java technology:
+Bean
+ In java Bean is called "java Object Only"
+
+EJB
+ It is also java object, which is distributed
+
+Enitity
+ It is also java object, which is persitable into fs,networks,rdbms
+
+
+
+
+
+What is use of @Component?
+ ->To eleminate bean definition from beans.xml file
+
+<bean id="customerService"  class="com.ae.spring.service.impl.CustomerServiceImpl"/>
+
+
+Spring provides  stereotype annotations:
+ @Component is core type
+
+Api doc:
+
+@Target(value=TYPE)
+ @Retention(value=RUNTIME)
+ @Documented
+ @Indexed
+public @interface Component
+
+@Component is class level annotation,declared on the top of class.
+
+Indicates that an annotated class is a "component"
+Such classes are considered as candidates for auto-detection when using annotation-based configuration and classpath scanning.
+
+Auto-detection and component scanning:
+
+base package: com.ae.spring
+			    com
+			     |
+			    ae
+			     |
+                           spring
+		    -----------------------------
+		   |                            |
+                service                        repo
+		   |                            |
+		 impl                          impl
+-------------------------------       -----------------------------
+  |               |                   |                          |
+CustomerService ProductService     CustomerRepoImpl          ProductRepoImpl
+Impl            Impl
+
+@Component      @Component         @Component                @Component
+
+
+beans.xml
+ <context:component-scan base-package="com.ae.spring"/>
+
+ ->Sping will start scanning the classes from the base package and its subpackages and its subpackages and so on...
+ create objects ,injects references into another bean via @Autowired.
+
+Eg:
+beans.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.ae.spring"/>
+	<!-- <bean id="customerService" class="com.ae.spring.service.impl.CustomerServiceImpl"/> -->
+</beans>
+.........................................................................
+package com.ae.spring.service;
+
+public interface CustomerService {  
+  void findAll();
+}
+.............................................................................4
+
+package com.ae.spring.service.impl;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import org.springframework.stereotype.Component;
+import com.ae.spring.service.CustomerService;
+
+@Component
+public class CustomerServiceImpl implements CustomerService {
+
+	@PostConstruct
+	public void init() {
+		System.out.println("CustomerServiceImpl : init");
+
+	}
+
+	public void findAll() {
+		System.out.println("CustomerServiceImpl : findAll");
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println("CustomerServiceImpl : destroy");
+
+	}
+
+}
+............................................................................
+package com.ae.spring;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import com.ae.spring.service.CustomerService;
+import com.ae.spring.service.impl.CustomerServiceImpl;
+
+public class App {
+	public static void main(String[] args) {
+		ConfigurableApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
+		//CustomerService service = ctx.getBean("customerService", CustomerServiceImpl.class);
+		CustomerService service = ctx.getBean(CustomerServiceImpl.class);
+		service.findAll();
+		ctx.registerShutdownHook();
+
+	}
+}
+..............................................................................
+
+Note: getBean method returns bean byType by default.
+
+What if i want the bean by name?
+
+@Component(value="customerService")
+
+...........................................................................
+sterotype annotations:
+......................
+@Component is a generic stereotype for any Spring-managed component.
+
+@Repository, @Service, and @Controller are specializations of @Component for more specific use cases.
+
+by annotating them with @Repository, @Service, or @Controller instead, your classes are more properly suited for processing by tools or associating with aspects.
+
+
+@Service:
+
+@Target(value=TYPE)
+ @Retention(value=RUNTIME)
+ @Documented
+ @Component
+public @interface Service
+
+Indicates that an annotated class is a "Service", originally defined by Domain-Driven Design (Evans, 2003) as "an operation offered as an interface that stands alone in the model, with no encapsulated state."
+
+package com.ae.spring.service.impl;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+
+import com.ae.spring.service.CustomerService;
+
+@Service(value="customerService")
+public class CustomerServiceImpl implements CustomerService {
+
+	@PostConstruct
+	public void init() {
+		System.out.println("CustomerServiceImpl : init");
+
+	}
+
+	public void findAll() {
+		System.out.println("CustomerServiceImpl : findAll");
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println("CustomerServiceImpl : destroy");
+
+	}
+
+}
+
+.............................................................................
+
+@Repository:
+@Target(value=TYPE)
+ @Retention(value=RUNTIME)
+ @Documented
+ @Component
+public @interface Repository
+
+indicates that an annotated class is a "Repository", originally defined by Domain-Driven Design (Evans, 2003) as "a mechanism for encapsulating storage, retrieval, and search behavior which emulates a collection of objects".
+////////////////////////////////////////////////////////////////////////////
+Repo + Service + Dependency Injection:
+......................................
+
+package com.ae.spring.repo;
+
+public interface CustomerRepo {
+	void findAll();
+}
+..........................................................................
+package com.ae.spring.repo.impl;
+
+import org.springframework.stereotype.Repository;
+import com.ae.spring.repo.CustomerRepo;
+
+@Repository
+public class CustomerRepoImpl implements CustomerRepo {
+
+	public void findAll() {
+		System.out.println("CustomerRepoImpl : findAll");
+		
+	}
+
+}
+...........................................................................
+package com.ae.spring.service;
+
+public interface CustomerService {
+  void findAll();
+}
+
+..............................................................................
+package com.ae.spring.service.impl;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ae.spring.repo.CustomerRepo;
+import com.ae.spring.service.CustomerService;
+
+@Service(value = "customerService")
+public class CustomerServiceImpl implements CustomerService {
+
+	@Autowired
+	private CustomerRepo repo;
+
+	public CustomerServiceImpl() {
+	}
+
+	public CustomerServiceImpl(CustomerRepo repo) {
+		super();
+		this.repo = repo;
+	}
+
+	public CustomerRepo getRepo() {
+		return repo;
+	}
+
+	public void setRepo(CustomerRepo repo) {
+		this.repo = repo;
+	}
+
+	@PostConstruct
+	public void init() {
+		System.out.println("CustomerServiceImpl : init");
+
+	}
+
+	public void findAll() {
+		System.out.println("CustomerServiceImpl : findAll");
+		repo.findAll();
+	}
+
+	@PreDestroy
+	public void destroy() {
+		System.out.println("CustomerServiceImpl : destroy");
+
+	}
+
+}
+.............................................................................
+
+@Target(value=TYPE)
+ @Retention(value=RUNTIME)
+ @Documented
+ @Component
+public @interface Controller
+Indicates that an annotated class is a "Controller" (e.g. a web controller).
+.............................................................................
+
+Thanks to XML ,Good bye to XML,Welcome to Java Config:
+......................................................
+
+What is Java Config?
+
+JavaConfig <=======> beans.xml
+  but it is pure java Program.
+
+beans.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+</beans>
+
+packages: com.ae.spring.config
+
+Steps: 
+1.declare a class
+
+public class AppConfig{
+
+}
+2.Annotate with @Configuration ==<beans>
+
+
+Bean Declaration:
+<beans>
+    <bean name="customerService" class="com.ae.spring.service.impl.CustomerServiceImpl"/>
+</beans> 
+
+<bean name="customerService" class="com.ae.spring.service.impl.CustomerServiceImpl"/>
+
+equivalent to
+      @Bean
+	public CustomerService getCustomer() {
+		return new CustomerServiceImpl();
+	}
+
+3.How to Get Bean from main Program?
+
+
+  
+ Configuration  
+     XML             ---->ClassPathXmlApplicationContext("beans.xml");
+                      |
+ApplicationContext ctx|
+                      |
+   Configuration     ---->AnnotationConfigApplicationContext(AppConfig.class);
+    JavaConfig
+
+Eg:
+
+package com.ae.spring.service;
+
+public interface CustomerService {
+	void findAll();
+}
+............................................................................
+package com.ae.spring.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.ae.spring.service.CustomerService;
+
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+	public void findAll() {
+		System.out.println("CustomerServiceImpl : findAll");
+	}
+
+}
+............................................................................
+package com.ae.spring.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.ae.spring.service.CustomerService;
+import com.ae.spring.service.impl.CustomerServiceImpl;
+
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public CustomerService getCustomerServiceBean() {
+		return new CustomerServiceImpl();
+	}
+}
+............................................................................
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.ae.spring.config.AppConfig;
+import com.ae.spring.service.CustomerService;
+
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	ApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+    	CustomerService service=ctx.getBean(CustomerService.class);
+    	service.findAll();
+    }
+}
+............................................................................
+
+More Beans,With Dependency via @AutoWired:
+............................................
+
+package com.ae.spring.repo;
+
+public interface CustomerRepo {
+  void findAll();
+}
+..........................................................................
+
+package com.ae.spring.repo.impl;
+
+import org.springframework.stereotype.Repository;
+
+import com.ae.spring.repo.CustomerRepo;
+
+@Repository
+public class CustomerRepoImpl implements CustomerRepo {
+
+	public void findAll() {
+		System.out.println("CustomerRepoImpl : findAll");
+	}
+
+}
+..........................................................................
+package com.ae.spring.service;
+
+public interface CustomerService {
+	void findAll();
+}
+..........................................................................
+package com.ae.spring.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.ae.spring.repo.CustomerRepo;
+import com.ae.spring.service.CustomerService;
+
+@Service
+public class CustomerServiceImpl implements CustomerService {
+
+	@Autowired
+	private CustomerRepo customerRepo;
+
+	public CustomerServiceImpl() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public CustomerServiceImpl(CustomerRepo customerRepo) {
+		super();
+		this.customerRepo = customerRepo;
+	}
+
+	public CustomerRepo getCustomerRepo() {
+		return customerRepo;
+	}
+
+	public void setCustomerRepo(CustomerRepo customerRepo) {
+		this.customerRepo = customerRepo;
+	}
+
+	public void findAll() {
+		System.out.println("CustomerServiceImpl : findAll");
+		customerRepo.findAll();
+	}
+
+}
+..........................................................................
+package com.ae.spring.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import com.ae.spring.repo.CustomerRepo;
+import com.ae.spring.repo.impl.CustomerRepoImpl;
+import com.ae.spring.service.CustomerService;
+import com.ae.spring.service.impl.CustomerServiceImpl;
+
+@Configuration
+public class AppConfig {
+
+	@Bean
+	public CustomerService getCustomerServiceBean() {
+		return new CustomerServiceImpl();
+	}
+
+	@Bean
+	public CustomerRepo getCustomerRepoBean() {
+		return new CustomerRepoImpl();
+	}
+}
+..........................................................................
+package com.ae.spring;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.ae.spring.config.AppConfig;
+import com.ae.spring.service.CustomerService;
+
+public class App 
+{
+    public static void main( String[] args )
+    {
+    	ApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);
+    	CustomerService service=ctx.getBean(CustomerService.class);
+    	service.findAll();
+    }
+}
+..........................................................................
+
+Drawbacks of Bean Creations:
+
+1.if app grows, we need to create Beans through @Bean declarations.
+
+How to solve this?
+
+@ComponentScan(basePackage="com.ae.spring")
+
+
+package com.ae.spring.config;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ComponentScan(basePackages = "com.ae.spring")
+public class AppConfig {
+}
+
+without @Configuration Anntoation: Because ComponentScan is child Annotation
+
+package com.ae.spring.config;
+
+import org.springframework.context.annotation.ComponentScan;
+
+@ComponentScan(basePackages = "com.ae.spring")
+public class AppConfig {
+}
+///***********///////////********************/////////////////////************
+
+Reading Property Files:
+
+src/main/java
+dbconfig.properties
+
+jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/classicmodels
+jdbc.userName=root
+jdbc.password=root
+jdbc.poolsize=10
+
+
+
+package com.ae.spring.config;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
+
+@Configuration
+//@PropertySource("classpath:dbconfig.properties")
+@PropertySources({ @PropertySource("classpath:dbconfig.properties") })
+public class DataSourceConfig {
+
+	@Value(value = "${jdbc.driver}")
+	private String driver;
+	@Value(value = "${jdbc.url}")
+	private String url;
+	@Value(value = "${jdbc.userName}")
+	private String userName;
+	@Value(value = "${jdbc.password}")
+	private String password;
+	@Value(value = "${jdbc.poolsize}")
+	private int poolsize;
+
+	@Bean
+	public DataSource getDataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(driver);
+		dataSource.setUrl(url);
+		dataSource.setUsername(userName);
+		dataSource.setPassword(password);
+		dataSource.setMaxActive(poolsize);
+		return dataSource;
+
+	}
+}
+/////////////////////////////////////////////////////////////////////////////
+Reading properties via "Environment"
+
+Envivronment is object which represents running Spring Container.
+
+getProperty("key") env.getProperty("jdbc.driver")
+
+
+package com.ae.spring.config;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
+
+@Configuration
+//@PropertySource("classpath:dbconfig.properties")
+@PropertySources({ @PropertySource("classpath:dbconfig.properties") })
+public class DataSourceConfig {
+
+	@Autowired
+	private Environment env;
+
+	@Bean
+	public DataSource getDataSource() {
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(env.getProperty("jdbc.driver"));
+		dataSource.setUrl(env.getProperty("jdbc.url"));
+		dataSource.setUsername(env.getProperty("jdbc.userName"));
+		dataSource.setPassword(env.getProperty("jdbc.password"));
+		dataSource.setMaxActive(Integer.parseInt(env.getProperty("poolsize")));
+		return dataSource;
+
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////
+Profile Based Bean Creations:
+
+App.java
+package com.ae.spring;
+
+import java.util.List;
+
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.ae.spring.config.AppConfig;
+import com.ae.spring.entity.Customer;
+import com.ae.spring.service.CustomerService;
+
+public class App {
+	public static void main(String[] args) {
+		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
+		ctx.getEnvironment().setActiveProfiles("dev");
+		ctx.register(AppConfig.class);
+		ctx.refresh();
+		CustomerService service = ctx.getBean(CustomerService.class);
+		List<Customer> customers = service.findAll();
+		for (Customer customer : customers) {
+			System.out.println(customer.getId() + " " + customer.getName());
+		}
+	}
+}
+
+DataSourceConfig
+package com.ae.spring.config;
+
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowire;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
+import org.springframework.core.env.Environment;
+
+@Configuration
+//@PropertySource("classpath:dbconfig.properties")
+@PropertySources({ @PropertySource("classpath:dbconfig.properties") })
+public class DataSourceConfig {
+
+//	@Value(value = "${jdbc.driver}")
+//	private String driver;
+//	@Value(value = "${jdbc.url}")
+//	private String url;
+//	@Value(value = "${jdbc.userName}")
+//	private String userName;
+//	@Value(value = "${jdbc.password}")
+//	private String password;
+//	@Value(value = "${jdbc.poolsize}")
+//	private int poolsize;
+
+	@Autowired
+	private Environment env;
+
+	@Bean
+	@Profile(value="dev")
+	public DataSource getDevDataSource() {
+		System.out.println("Dev : DataSource has been activated");
+		BasicDataSource dataSource = new BasicDataSource();
+//		dataSource.setDriverClassName(driver);
+//		dataSource.setUrl(url);
+//		dataSource.setUsername(userName);
+//		dataSource.setPassword(password);
+//		dataSource.setMaxActive(poolsize);
+
+		dataSource.setDriverClassName(env.getProperty("jdbc.driver"));
+		dataSource.setUrl(env.getProperty("jdbc.url"));
+		dataSource.setUsername(env.getProperty("jdbc.userName"));
+		dataSource.setPassword(env.getProperty("jdbc.password"));
+		dataSource.setMaxActive(Integer.parseInt(env.getProperty("jdbc.poolsize")));
+		return dataSource;
+
+	}
+	@Bean
+	@Profile(value="test")
+	public DataSource getTestingDataSource() {
+		System.out.println("Testing : DataSource has been activated");
+
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(env.getProperty("jdbc.driver"));
+		dataSource.setUrl(env.getProperty("jdbc.url"));
+		dataSource.setUsername(env.getProperty("jdbc.userName"));
+		dataSource.setPassword(env.getProperty("jdbc.password"));
+		dataSource.setMaxActive(Integer.parseInt(env.getProperty("jdbc.poolsize")));
+		return dataSource;
+
+	}
+	@Bean
+	@Profile(value="prod")
+	public DataSource getProdDataSource() {
+		System.out.println("Prod : DataSource has been activated");
+		BasicDataSource dataSource = new BasicDataSource();
+		dataSource.setDriverClassName(env.getProperty("jdbc.driver"));
+		dataSource.setUrl(env.getProperty("jdbc.url"));
+		dataSource.setUsername(env.getProperty("jdbc.userName"));
+		dataSource.setPassword(env.getProperty("jdbc.password"));
+		dataSource.setMaxActive(Integer.parseInt(env.getProperty("jdbc.poolsize")));
+		return dataSource;
+
+	}
+}
+////////////////////////////////////////////////////////////////////////////
+Spring-orm : 
+Spring-hibernate
+spring-jpa
+   |
+  JPA provider
+	|
+   Hibernate Provider
+
+//////////////////////////////////////////////////////////////////////////
+
+dependency:
+<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>5.4.4.Final</version>
+		</dependency>
+<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>5.1.9.RELEASE</version>
+		</dependency>
+
+/////////////////////////////////////////////////////////////////////////////
+Hibernate and JPA ,Transaction configuration:
+.............................................
+
+
+package com.ae.spring.config;
+
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+
+@Configuration
+public class JpaConfig {
+
+	@Autowired
+	private DataSource dataSource;
+
+	// hibernate.config.xml
+	public Properties additionalProperties() {
+		Properties properties = new Properties();
+		// properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+		properties.setProperty("hibernate.show_sql", "true");
+		properties.setProperty("hibernate.format_sql", "true");
+		return properties;
+	}
+
+	//JPA on Hibernate Bean
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		// property intitalization
+		em.setDataSource(dataSource); // DataSource
+		em.setPackagesToScan(new String[] { "com.ae.spring.entity" }); // JPA annotations
+		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();// JPA provider
+		em.setJpaVendorAdapter(vendorAdapter); //Binding Provider with Spring Container
+		em.setJpaProperties(additionalProperties());
+		return em;
+	}
+	//Transaction Bean
+	@Bean
+	public PlatformTransactionManager jpaTxnManager(EntityManagerFactory emf) {
+		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+		jpaTransactionManager.setEntityManagerFactory(emf);
+		return jpaTransactionManager;
+	}
+
+}
+/////////////////////////////////////////////////////////////////////////////
+
+@EnableXXX:
+
+ What is XXX?
+   XXX is feature.
+Enterprise Application features:
+1.transaction
+2.concurrency
+3.Security
+
+package com.ae.spring.config;
+
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
+@Configuration
+@EnableTransactionManagement
+public class JpaConfig {
+
+	@Autowired
+	private DataSource dataSource;
+
+	// hibernate.config.xml
+	public Properties additionalProperties() {
+		Properties properties = new Properties();
+		// properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+		properties.setProperty("hibernate.show_sql", "true");
+		properties.setProperty("hibernate.format_sql", "true");
+		return properties;
+	}
+
+	//JPA on Hibernate Bean
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		// property intitalization
+		em.setDataSource(dataSource); // DataSource
+		em.setPackagesToScan(new String[] { "com.ae.spring.entity" }); // JPA annotations
+		JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();// JPA provider
+		em.setJpaVendorAdapter(vendorAdapter); //Binding Provider with Spring Container
+		em.setJpaProperties(additionalProperties());
+		return em;
+	}
+	//Transaction Bean
+	@Bean
+	public PlatformTransactionManager jpaTxnManager(EntityManagerFactory emf) {
+		JpaTransactionManager jpaTransactionManager = new JpaTransactionManager();
+		jpaTransactionManager.setEntityManagerFactory(emf);
+		return jpaTransactionManager;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

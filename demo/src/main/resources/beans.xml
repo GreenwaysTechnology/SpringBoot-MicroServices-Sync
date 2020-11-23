@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--Enable scanner to scan all annotations, load  specific bean definitions and create beans -->
+    <context:annotation-config/>
+    <!--Enable scanner to scan streo types and create beans -->
+    <context:component-scan base-package="com.example.demo"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value="classpath:customer-info.properties"/>
+    </bean>
+    <!--    <bean class="com.example.demo.beans.extensions.BeanPostProcessorExtension"/>-->
+    <!--    <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>-->
+    <!--    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>-->
+
+    <!-- more bean definitions go here -->
+    <bean scope="prototype" destroy-method="destroy" init-method="init" id="hello"
+          class="com.example.demo.beans.HelloWorld">
+        <!--setter injection -->
+        <!--        <property name="message" value="Hello , I am spring dependant value"/>-->
+        <constructor-arg name="message" value="Hello Constructors"/>
+    </bean>
+
+    <bean id="clientService" class="com.example.demo.beans.extensions.annotations.ClientService">
+
+    </bean>
+
+
+    <bean id="address" class="com.example.demo.beans.Address">
+        <!--setter injection -->
+        <property name="city" value="Coimbatore"/>
+    </bean>
+
+
+    <bean id="customer" class="com.example.demo.beans.Customer">
+        <!--setter injection -->
+        <property name="customerId" value="${customer.id}"/>
+        <property name="name" value="${customer.name}"/>
+        <property name="address" ref="address"/>
+        <!--        <list>-->
+        <!--            <ref bean="address" />-->
+        <!--            <ref bean="address" />-->
+        <!--            <ref bean="address" />-->
+        <!--            <ref bean="address" />-->
+        <!--            <ref bean="address" />-->
+        <!--            <ref bean="address" />-->
+        <!--        </list>-->
+    </bean>
+
+    <bean id="inMemoryimpl"
+          class="com.example.demo.beans.CustomerInMemoryRepositoryImpl">
+
+    </bean>
+    <bean id="jpaImpl"
+          class="com.example.demo.beans.CustomerJPARepositoryImpl">
+    </bean>
+    <bean id="customerService" class="com.example.demo.beans.CustomerServiceImpl">
+        <constructor-arg ref="inMemoryimpl"/>
+    </bean>
+
+    <bean id="newOrder" class="com.example.demo.beans.extensions.annotations.Order"/>
+    <bean id="newCustomer" class="com.example.demo.beans.extensions.annotations.Customer">
+        <property name="order" ref="newOrder"></property>
+    </bean>
+    <bean id="project" class="com.example.demo.beans.extensions.annotations.Project">
+
+    </bean>    <!--autowire -->
+    <bean id="employee" class="com.example.demo.beans.extensions.annotations.Employee">
+
+    </bean>
+    <!--    <bean id="greeter" class="com.example.demo.beans.extensions.annotations.stero.Greeter"/>-->
+</beans>

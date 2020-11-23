@@ -1,0 +1,292 @@
+Spring Boot:
+
+What is spring boot?
+
+Spring boot a project.
+
+Spring provides lot of projects to build distributed enterprise java application.
+
+distributed Enterprise application: 
+
+To build distributed enterprise application, we have many patterns.
+
+1.Client-server architecture 
+
+  Presentation
+  Biz logic
+  Stroage logic
+-1- tier(layer) architecture
+-2 - tier(layer) architecture
+-3 or n tier - architecture
+  
+    -ui
+    -biz
+    -storage
+
+communications among layer:
+ you need  communication rules- protocals
+   -TCP,http
+ ui-------biz----storage
+
+WEB-http Based distribtued programming
+
+Java and enterprise computing:
+..............................
+
+jcp
+
+-jse 
+-jee
+
+Early 2000, java started becoming more popular in distributed application developement.
+
+J2EE /JEE Spec:
+
+JEE Platform spec : containers /app containers/tools
+
+WebTechnology spec
+ Java servlet - spec - dynamic and webservices
+ JSP
+ JSF
+ Websocket
+ JSTL
+ EL
+
+Enterprise Application spec
+EJB
+JPA -ORM
+JMS
+JTA
+DI
+Context and DI
+Concurrency Util
+
+Web Services
+SOAP based  -JAX-WS
+REST Based  -JAX-RS
+
+Management and Security technologies
+Java EE Security spec
+Java Auth
+Java authorzation
+
+JAVA EE additional spec
+
+JMX -Jmeter,Spring Actuator
+
+
+JEE enterprise application:
+............................
+
+Client Layer         Web Layer      Biz layer      Data Layer/Persistency
+
+Browser             Servlet/JSP      EJB               Entity Beans
+
+EJB :Enterprise Java Bean
+  Java Object can support distributed biz operations
+eg: incase of shopping cart
+  I have a bean(java object) which has three apis addToCart,Checkout,Payment)
+
+Api classifications:
+1.Session Bean  - to represent biz logic---jdbc--dml
+2.Enitity bean  -ORM - Object to Table mapping-First orm solution---Hibernate
+3.Message Driven Bean - Message driven systems-RabbitMQ,Kaffka,JMS
+
+
+Rod  was working in enterprise banking application with jee, he faced lot of complexity in designing ejb driven systems, so he decided to move ejb from JEE application, he wrote book called expert  J2EE ONE ON ONE design and development.
+
+
+
+He proposed a model  that model later on came as The project in "Spring Season" - Spring Framework.
+
+Client Layer         Web Layer      Biz layer      Data Layer/Persistency
+
+Browser              Spring         Spring              Spring-orm
+
+
+Spring was created to solve complexity in creating objects and managining those object depedencies
+
+ -IOC -CONTAINER - Sovles the problem of creating and linking objects from the developer-
+   -infrastructure
+
+spring takes care of infrastructure, dev can foucus biz logic.
+
+
+Spring started working on how to abstract infrastructure in java enterise programming.
+
+Spring framwork:
+................
+Core technologies: dependency injection, events, resources, i18n, validation, data binding, type conversion, SpEL, AOP.
+
+Testing: mock objects, TestContext framework, Spring MVC Test, WebTestClient.
+
+Data Access: transactions, DAO support, JDBC, ORM, Marshalling XML.
+
+Spring MVC and Spring WebFlux web frameworks.
+
+Integration: remoting, JMS, JCA, JMX, email, tasks, scheduling, cache.
+
+Languages: Kotlin, Groovy, dynamic languages.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring core concepts:
+.....................
+
+Bean:
+ What is bean?
+
+Bean is java object. Every Object can you  call bean?
+
+According to bean spec, if you want to create java object, if you follow specific standards are called
+as bean.
+
+As per bean
+
+1.every bean must have accessors and mutators - setters and getters.
+2.every bean may have overloaded constructors
+
+Spring follow bean spec in order create objects.
+
+Spring container:
+...............
+
+ Spring container is java object, which manages object(bean) life cycle like create,use,destroy.
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+How spring beans are created?
+
+-> you must have bean definitions outside application biz logic
+-> sp container reads that bean definitions, initalizes the beans.
+
+
+beans defintions:
+
+Spring Versions and features:
+
+2004 - Spring Framework 1.0 released
+– Champions dependency injection
+– Encourages POJOs
+– Uses XML files to describe application
+  configuration - bean definitions
+– Becomes popular quickly as an EJB
+  alternative
+
+• Spring 2.0 (2006):
+ – XML simplification, async JMS, JPA, AspectJ support
+
+• Spring 2.5 (2007, last release 2.5.6)
+  – Requires Java 1.4+ and supports JUnit 4
+  – Annotation DI, @MVC controllers, XML namespaces
+
+• Spring 3.x (3.2.17 released July 2013)
+
+   – Environment & Profiles, @Cacheable, @EnableXXX …
+   – Requires Java 1.5+ and JUnit 4.7+
+   – REST support, JavaConfig, SpEL, more annotations
+
+• Spring 4.x (released Dec 2016)
+    – Support for Java 8, @Conditional, Web-sockets
+
+• Spring 5.x (2017)
+   – Reactive programming focus
+
+Future spring releases
+
+ "Reactive Microservice"
+  -non blocking
+  -more on functional programming
+  -more on reactive
+
+
+Configuration manangement: Bean configuration:
+
+1.xml
+2.java config
+
+Build system:
+->ant
+->maven
+->gradle
+
+how to create spring project?
+
+ Select build system
+
+maven
+  
+-create project from scratch.
+-create project from templates-https://start.spring.io/
+
+Spring Container:
+................
+
+Object
+
+ -used to read bean definitions
+ -apply parsers to parse beans definitions
+ -creates and does all di 
+ -ready to use
+
+Note: In Spring most of the underyling impletations exposed as interfaces
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+IOC : dependency injections:
+...........................
+ Has-a relationship.
+
+ dependant values could be any thing from primitive to object references.
+
+setter
+constructor
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Container Extensions:
+
+
+1.BeanPostProcessor
+2.PropertyPlaceHolderConfigurer
+
+
+How to start annotation based programming? 
+ 
+Objective:
+1.to slowly remove xml configs where ever possible
+
+
+Automation:
+
+ - annotation
+ - autowire canditate -via annotation.
+ - have to remove annotation  plugins bean registration , have to ask spring container to resolve
+ - remove bean creations definitions in beans.xml 
+
+  <!--Enable scanner to scan all annotations, load  specific bean definitions and create beans -->
+    <context:annotation-config/>
+
+
+
+Stereotype Annotations:
+
+Stereotype: "Same type of things but it adds extra behaviour based on context"
+
+@Component,@Service,@Repository,@Controller,@RestController : From where it is inspired.
+
+ Domain driven design 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
