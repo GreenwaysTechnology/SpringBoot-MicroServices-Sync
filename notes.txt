@@ -272,6 +272,451 @@ Stereotype: "Same type of things but it adds extra behaviour based on context"
 @Component,@Service,@Repository,@Controller,@RestController : From where it is inspired.
 
  Domain driven design 
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Java Configurations:
+
+Multi-moudular configuration:
+
+	projectname-dao.xml
+	cleartrip.dao.xml 
+        cleartrip.service.xml
+        cleartrip.entitis.xml
+	cleartrip.beans.xml
+via Program:
+ConfigurableApplicationContext context = ClassPathXmlApplicationContext("bank-app.xml","account-repo.xml");
+
+or
+ConfigurableApplicationContext context = new ClassPathXmlApplicationContext
+new String[] { "bank-app.xml", "account-repo.xml" });
+
+
+java config:
+
+customer
+ @Configuration
+ class  CustomerConfig {
+   ///customer beans
+ }
+
+order
+@Configuration
+ class  OrderConfig {
+   ///customer beans
+ }
+accounts
+@Configuration
+ class  AccountsConfig {
+   ///customer beans
+ }
+
+AppConfig
+
+@Configuration
+@ComponentScan
+@Import({CustomerConfig.class,OrderConfig.class})
+class AppConfig{
+  //application level beans
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Profiles:
+Spring Profiles provide a way to segregate parts of your application configuration and make it only available in certain environments. 
+
+We can do on and off feature on spring application features.
+
+ -i want to create beans for each env(dev,test,prod)
+
+spring container intelli sense  and boot strap application based on env 
+
+Profiles can be applied on Configuration, beans, Components
+
+@Configuration
+@Profile("production")
+public class ProductionConfiguration {
+
+    // ...beans
+
+}
+Setting profiles
+
+1.application.properties
+spring.profiles.active=dev,hsqldb
+
+2.via code 
+
+3.via env variable.
+  -Dspring
+////////////////////////
+
+Steps:
+
+1.create configuration:
+package com.example.springbootconfig;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+
+@Configuration
+public class AppConfig {
+
+    @Bean
+    @Profile(value = "prod")
+    public Greeter getDataSourceProd() {
+        System.out.println("Production Mode");
+        return new Greeter("prod");
+    }
+
+    @Bean
+    @Profile(value = "test")
+    public Greeter getDataSourceTest() {
+        System.out.println("Test Mode");
+        return new Greeter("test");
+    }
+
+    @Bean
+    @Profile(value = "dev")
+    public Greeter getDataSourceDev() {
+        System.out.println("Dev Mode");
+        return new Greeter("dev");
+    }
+}
+
+
+@SpringBootApplication
+public class SpringBootConfigApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootConfigApplication.class, args);
+	}
+
+}
+
+create jar file
+
+mvn clean package
+
+or test with cmd line 
+
+java -Dspring.profiles.active=prod -jar target/spring-boot-magic-0.0.1-SNAPSHOT.jar
+
+
+Here we create only beans based on profiles, if profile type is dev, then rest of the beans wont be created.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Profiles are greate for
+
+This approach works for simple cases like enable or disable bean registrations or configuration based on activated profiles. 
+
+But if you want to register beans based on some conditional logic then the Profiles approach itself is not sufficient.
+
+To provide much more flexibility for registering Spring beans conditionally,
+Spring 4 introduced the concept of @Conditional.
+
+By using @Conditional approach you can register a bean/configuration/component conditionally based on any arbitrary condition.
+
+For example, you may want to register a bean when:
+
+Use cases
+
+A specific class is present in classpath 
+A Spring bean of certain type doesn’t already registered in ApplicationContext 
+A specific file exists on a location 
+A specific property value is configured in a configuration file 
+A specific system property is present/absent 
+
+These are just a few examples only and you can have any condition you want.
+
+@Conditional can be applied on class, method
+
+
+@Configuration
+@Conditional
+@ComponentScan
+class AppConfig{
+
+  @Bean
+  @Conditional
+  public SomeBean somebean(){ 
+      return new SomeBean();
+  }
+}
+Why do we need Conditional Beans?
+
+Declaring Conditional Beans
+
+Conditional @Bean
+Conditional @Configuration
+Conditional @Component
+
+
+Pre-Defined Conditions
+
+@ConditionalOnProperty
+@ConditionalOnExpression
+@ConditionalOnBean
+@ConditionalOnMissingBean
+@ConditionalOnResource
+
+Other Conditions
+
+Custom Conditions
+
+Defining a Custom Condition
+
+Combining Conditions with OR
+Combining Conditions with AND
+Combining Conditions with NOT
+
+Defining a Custom @ConditionalOn… Annotation
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+@ConditionalOnProperty:
+......................
+ It allows to load beans conditionally depending on a certain environment property.
+
+env property: property from property file
+
+
+@Configuration
+@ConditionalOnProperty(
+    value="module.enabled", 
+    havingValue = "true", 
+    matchIfMissing = true)
+class CrossCuttingConcernModule {
+  ...
+}
+The CrossCuttingConcernModule is only loaded if the module.enabled property has the value true. 
+
+If the property is not set at all,
+ it will still be loaded, because we have defined matchIfMissing as true. This way, we have created a module that is loaded by default until we decide otherwise.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+@ConditionalOnBean
+
+Sometimes, we might want to load a bean only if a certain other bean is available in the application context:
+
+  if x bean avilable only load y bean
+
+  if datasource bean available only load hibernate configuration bean.
+
+  if a moudle is available only load b module.
+
+
+@Configuration
+@ConditionalOnBean(OtherModule.class)
+class DependantModule {
+  ...
+}
+
+@ConditionalOnMissingBean
+
+Similarly, we can use @ConditionalOnMissingBean if we want to load a bean only if a certain other bean is not in the application context:
+
+  if datasource with mysql not there, load datasource with h2..
+
+@Configuration
+class OnMissingBeanModule {
+
+  @Bean
+  @ConditionalOnMissingBean
+  DataSource dataSource() {
+    return new InMemoryDataSource();
+  }
+}
+
+In this example, we’re only injecting an in-memory datasource into the application context if there is not already a datasource available. This is very similar to what Spring Boot does internally to provide an in-memory database in a test context.
+
+@ConditionalOnResource
+
+If we want to load a bean depending on the fact that a certain resource is available on the class path, we can use @ConditionalOnResource:
+
+@Configuration
+@ConditionalOnResource(resources = "/logback.xml")
+class LogbackModule {
+  ...
+}
+
+@ConditionalOnJava
+
+Load a bean only if running a certain version of Java:
+
+@Configuration
+@ConditionalOnJava(JavaVersion.EIGHT)
+class OnJavaModule {
+  ...
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Enabling features:
+
+Spring comes with a set of @Enable annotations that make it easier for developers to configure a Spring application. These annotations are used in conjunction with the @Configuration annotation.
+
+Enable annotation will import a specific configuration into current application 
+
+Which is eq to @Import.
+
+Spring provides a range of annotations with names starting with Enable*, these annotations in essence enable certain Spring managed features to be activated.
+
+@EnableXXX - Where XXX is Feature
+
+
+ @Configuration
+ @EnableWebMvc
+ @ComponentScan(basePackageClasses = MyConfiguration.class)
+ public class MyConfiguration {
+
+ }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+AutoConfiguration:
+..................
+
+Configuration is based on config meta data provied in "META-INF/spring.factories"
+
+ contains configuration information.
+
+Spring container scans spring.factories file , starts loading configuration, which apples @condtional 
+annotations.
+
+  Container------|AppConfig----|spring.factories----starts initalizing beans/configurations/components   based on rules(conditions) => Spring Boot.
+
+Spring team even optimized configuration loading by providing "start packages"
+
+Start package - it is jar file---collection of java classes.
+
+Spring team who have built a projects - like, web,data,cloud-----packaged as jar.
+
+ jar
+   |
+   Meta-inf
+      ---spring.factories
+             ----load all beans.
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+package com.example.springbootconfig.mycondition;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+@ConditionalOnClass({String.class})
+public class ConfigureDefaults {
+    Logger logger = LoggerFactory.getLogger(ConfigureDefaults.class);
+
+    @Bean
+    public String stringValue() {
+        logger.info("Spring boot auto Configure Defaults");
+        return new String("test");
+    }
+}
+
+package com.example.springbootconfig;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+//@EnableAutoConfiguration
+//@ComponentScan
+public class SpringBootConfigApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(SpringBootConfigApplication.class, args);
+	}
+
+}
+
+resources/META-INF/spring.factories
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.example.springbootconfig.mycondition.ConfigureDefaults
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring boot Features
+....................
+
+Spring Boot makes it easy to create stand-alone, production-grade Spring based Applications that you can "just run".
+ 
+   Spring boot provides fat jar based programming model.
+ 
+ Single jar is single app -looks like exe in windows, installer in linux
+   including
+     - app code
+     - resources -config files,static assets
+     - runtime - web containers - tomcat,netty,Jetty,undertow.....
+
+Why embeded runtime?
+  for cloud and container based deployment.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring boot project creation with starter projects
+
+spring.initalizer
+
+
+How to run spring boot projects?
+
+1.Using maven run goal
+mvnw spring-boot:run
+
+2.Using IDE, 
+   run main program.
+3.Using java and fat jar model
+mvn clean package
+
+java -jar target/spring-boot-0.0.1-SNAPSHOT.jar
+
+4.via commandline Spring cli
+   spring run app.groovy
+
+5.via Dockers
+  
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring Boot Modules
+
+1.Spring Web
+2.Spring Data
+3.Spring health -acutactor
+.......................................................................................................
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

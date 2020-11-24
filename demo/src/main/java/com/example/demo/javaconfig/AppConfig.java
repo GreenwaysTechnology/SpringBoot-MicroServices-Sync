@@ -3,6 +3,7 @@ package com.example.demo.javaconfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * beans.xml
@@ -24,9 +25,10 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackages = "com.example.demo.javaconfig")
+@Import(value = {HelloConfig.class})
 public class AppConfig {
-    @Bean
-    public HelloWorld helloWorld() {
-        return new HelloWorld();
-    }
+//    @Bean
+//    public HelloWorld helloWorld() {
+//        return new HelloWorld();
+//    }
 }
