@@ -691,6 +691,1652 @@ Spring Boot Modules
 3.Spring health -acutactor
 .......................................................................................................
 
+Web Applications in Spring:
+...........................
+
+In java /jee - Servlet is core spec on which we can build web applications.
+
+SpringMVC:
+  IT is project to build web apps.
+
+Types of webapps
+
+1.static web - pre 95
+2.dynamic web apps - 96 to till date.
+   -Servlets
+   -jsps -View 
+ Compiled html pages , sent to clients
+  SpringMVC built for building dynamic web apps.
+
+3.Web Services
+   - Data driven web apps
+      sending data from web server to clients, clients can process the data
+  DATA interchange format -  XML.
+   
+   -XML data driven apps - SOAP BASED Web services - SOA DECOMISED Version of webservices.
+   -RESTFul architecture
+      - based on http protocal spec.
+      - can exchange data in any format- xml,json,pdf......
+
+4.SPA web applications
+   -Single web application- introduced by w3c in 2006 as part of HTML 5 Spec
+  UI applications - ng,react,view,jquery......
+
+Spring can be used
+ -dynamic web apps 
+ -webservices both.
+
+We are going to build REST full architecture
+............................................
+
+REST : Defines How to build distributed app based on HTTP Spec/standards
+
+Representational state transfer (REST) is a software architectural style that defines a set of constraints to be used for creating Web services.
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Client-can be any body
+  -Browser
+  -Mobile Apps
+  -other devices(IOT)---------------HTTP----------------------Web Server-----Application---Data Source
+
+What is HTTP inside machine? is it hardware /software?
+   http is program-http is c program.
+
+http.c
+   request.c
+   response.c
+   socket.c
+
+Since http is c program, program is collection of variables and methods.
+in http world variables are called "HEADERS" ,methods are called http methods-get,post,put,delete,trace....
+ 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Representational -  Format - Data format
+   JSON,XML,PDF,WORD,HTML,XHTML,Vido,jpeg.....
+
+state
+ Application data
+in oo , every object has 3 charactertics
+ -state
+ -behaviour
+ -identity
+IN restfull architecture , state means , object state- data.
+
+transfer
+ moving from server to client and client to server.
+
+The object state is transfered in different format via http from server to client and client to server.
+
+REST is architecture talks object how to send resources to client in object oriented way.
+
+Resource:
+  could be anything. - Object
+
+                        REST is language and platform independant
+
+REST implemenations on Java:
+
+1.JAX-RS Spec implemenation using RestEasy framework.
+
+2.Spring Rest implementation by springframework.
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Steps to implement:
+
+1.identity biz models in the system - Resources.
+ 
+We may call this enity,bean,object like so...
+
+eg:
+
+Order entry System:
+The object model of our order entry system is very simple. Each order in the system
+represents a single transaction or purchase and is associated with a particular customer.
+Orders are made up of one or more line items. Line items represent the type and number
+of each product purchased.
+
+Based on this description of our system, we can deduce that the objects in our model
+are Order, Customer, LineItem, and Product. Each data object in our model has a unique
+identifier, which is the integer id property.
+
+We will want to browse all orders as well as each individual order in our system. We will
+also want to submit new orders and update existing ones. Finally, we will want to have
+the ability to cancel and delete existing orders.
+
+The OrderEntryService object represents
+the operations we want to perform on our Order, Customer, LineItem, and Prod
+uct objects.
+
+2.Model the URIs.
+
+The first thing we are going to do to create our distributed interface is define and name
+each of the distributed endpoints in our system
+
+In a RESTful system, endpoints are
+usually referred to as resources and are identified using a URI. URIs satisfy the addressability
+requirements of a RESTful service.
+
+In our object model, we will be interacting with Orders, Customers, and Products.
+These will be our main, top-level resources. We want to be able to obtain lists of each
+of these top-level items and to interact with individual items. LineItems are aggregated
+within Order objects so they will not be a top-level resource. We could expose them as
+a subresource under one particular Order, but for now, let’s assume they are hidden by
+the data format. Given this, here is a list of URIs that will be exposed in our system:
+
+/orders
+/orders/{id}
+/products
+/products/{id}
+/customers
+/customers/{id}
+
+
+3.Defining the Data Format
+  
+RESTFul system can support many formats, as client interest, System may return DATA in representations.
+  -JSON/XML/HTML....
+
+4.Assigning HTTP Methods
+
+  The final thing we have to do is decide which HTTP methods will be exposed for each of our resources and what these methods will do.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring boot REST Full web service implementation:
+..................................................
+
+Spring supports two types of Implementation  architecture
+
+ -Blocking- old servlet based 
+    
+ -Reactive style
+     -non blocking
+     -data streaming with back pressure.
+
+Blocking model:
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+project layout recommendation from spring team;
+
+Project layout:
+
+com
++- example
++- myapplication
++- Application.java
+|
++- customer
+| +- Customer.java
+| +- CustomerController.java
+| +- CustomerService.java
+| +- CustomerRepository.java
+|
++- order
++- Order.java
++- OrderController.java
++- OrderService.java
++- OrderRepository.java
+
+
+Spring MVC Annotations:
+.......................
+
+Core Annotations
+
+@Controller.
+@RestController
+@RequestMapping.
+@PathVariable.
+@RequestParam.
+@ModelAttribute.
+@RequestBody and @ResponseBody.
+@RequestHeader and @ResponseHeader.
+
+
+SpringMVC project can be used to build dynamic web apps and rest apps.
+
+@RestController
+  - class level annotation.
+
+Spring internally uses a servlet - DispatcherServlet(Front End Controller)
+
+
+Client --------request-----DispatcherServlet------|--Applicaiton Controllers
+
+
+
+Handler methods:
+
+ -Web request handler methods
+
+- public methods
+- Return values
+	
+- accept args
+
+Args:
+ ServletRequest
+ WebRequest
+ HttpSession
+ @PathVariable
+ @MatrixVariable
+ @RequestParam
+ @RequestHeader
+ @RequestBody
+
+Return values:
+............
+@ResponseBody
+ The return value is converted through HttpMessageConverter implementations and written to the response
+  Uses HttpMessageConverter -  XML,JSON,VIEW........
+
+HttpEntity<B>, ResponseEntity<B>
+The return value that specifies the full response (including HTTP headers and body) is to be converted through HttpMessageConverter implementations and written to the response.
+
+Response:
+   Server will send domain data and meta informations = response
+   Domain data  = payload/body
+
+ResponseEntity
+  Wraps - body,+ headers,status code
+
+ResponseEntity
+ using constructor
+ - new ResponseEntity<Customer>(customer, httpHeaders, HttpStatus.OK);
+ using functional style: builder pattern
+
+package com.example.springrest.customer;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
+import java.util.List;
+
+@RestController
+@RequestMapping(value = "/api/customer")
+public class CustomerController {
+
+    //handler methods: to handle http requests - GET,POST,PUT,DELETE,
+    @RequestMapping
+    @ResponseBody
+    public String index(HttpServletRequest request) {
+        System.out.println(request.getMethod() + " - " + request.getRequestURI());
+        return "index";
+    }
+    //reutrn response;
+
+    @RequestMapping("/v1/single")
+    @ResponseBody
+    public ResponseEntity<Customer> findCustomerV1() {
+        //JAVA object
+        Customer customer = new Customer();
+        customer.setId(1);
+        customer.setName("Subramanian");
+        customer.setCity("Coimbatore");
+        //response entity can be used to add extra meta data - if you want to custome headers
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("key", "Abbcccc4522323");
+        return new ResponseEntity<Customer>(customer, httpHeaders, HttpStatus.OK);
+    }
+
+    //Domain Object directly
+    @RequestMapping("/v2/single")
+    // @ResponseBody
+    public Customer findCustomerV2() {
+        //JAVA object
+        Customer customer = new Customer();
+        customer.setId(1);
+        customer.setName("Subramanian");
+        customer.setCity("Coimbatore");
+        //Spring takes care of converting DOMAIN model into json by default ,adds http 200 status code
+        return customer;
+    }
+
+    @RequestMapping("/v3/single")
+    @ResponseBody
+    public ResponseEntity<Customer> findCustomerV3() {
+        //JAVA object
+        Customer customer = new Customer();
+        customer.setId(1);
+        customer.setName("Subramanian");
+        customer.setCity("Coimbatore");
+        //response entity can be used to add extra meta data - if you want to custome headers
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("key", "Abbcccc4522323");
+        //Builder pattern
+        return ResponseEntity
+                .status(200)
+                .headers(httpHeaders)
+                .body(customer);
+    }
+
+
+    @RequestMapping("/list")
+    @ResponseBody
+    public ResponseEntity<List<Customer>> findCustomers() {
+        //JAVA object
+        Customer customer1 = new Customer();
+        customer1.setId(1);
+        customer1.setName("Subramanian");
+        customer1.setCity("Coimbatore");
+
+        Customer customer2 = new Customer();
+        customer2.setId(2);
+        customer2.setName("Kathik");
+        customer2.setCity("Coimbatore");
+        List<Customer> customers = Arrays.asList(customer1, customer2);
+        return new ResponseEntity<List<Customer>>(customers, HttpStatus.OK);
+    }
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+Negotiation :
+
+  Agreement between client and server.based on request , server may send data.
+
+
+Use case:
+
+ client asks server that ,i want data in xml format
+
+Types of negotation;
+1.content negotation
+2.language negotation
+3.encoding negoations
+
+1.content negotation
+  The first part of HTTP Content Negotiation is that clients can request a specific media
+type they would like returned when querying a server for information.
+
+success response-200
+server not able to process client request-407 Not accept.
+
+    //content negotation: produces says that if client ask json or xml it can server
+    @RequestMapping(value = "/v4/single", produces = {"application/json", "application/xml"})
+    @ResponseBody
+    public ResponseEntity<Customer> findCustomerV4() {
+        //JAVA object
+        Customer customer = new Customer();
+        customer.setId(1);
+        customer.setName("Subramanian");
+        customer.setCity("Coimbatore");
+        //response entity can be used to add extra meta data - if you want to custome headers
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("key", "Abbcccc4522323");
+        //Builder pattern
+        return ResponseEntity
+                .status(200)
+                .headers(httpHeaders)
+                .body(customer);
+    }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+Parameters:
+Query Parameter
+
+ //Query params
+    //http://localhost:8080/api/customer/byid?id=100
+//    @RequestMapping("/byid")
+//    public String findById(@RequestParam String id) {
+//        return "Customer By " + id;
+//    }
+//    @RequestMapping(value = "/byid")
+//    String findById(@RequestParam("id") String personId) {
+//        System.out.println("ID is " + personId);
+//         return "Customer By " + personId;
+//    }
+//with default value
+    //http://localhost:8080/api/customer/byid - 100
+    //http://localhost:8080/api/customer/byid?id=800
+    @RequestMapping(value = "/byid")
+    String getDefaultName(@RequestParam(value = "id", defaultValue = "100") String personId) {
+        System.out.println(personId);
+        return "Customer By " + personId;
+    }
+    //http://localhost:8080/api/customer/name?person=Subramanian
+    //http://localhost:8080/api/customer/name
+    @RequestMapping(value = "/name")
+    String getName(@RequestParam(value = "person", required = false) String personName) {
+        System.out.println(personName);
+        return "Required element of request param";
+    }
+
+Dynamic url:
+
+ /api/customer/1 ,/api/customer/2
+
+@PathVariable
+
+
+    //http://localhost:8080/api/customer/fetch/3
+    @RequestMapping(value = "/fetch/{id}")
+    String getDynamicUriValue(@PathVariable String id) {
+        System.out.println("ID is " + id);
+        return "Dynamic URI parameter fetched" + id;
+    }
+
+/////////////////////////
+
+CURD operations
+
+package com.example.springrest.customer;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping(value = "/api")
+public class EmployeeController {
+
+    //request -get,post,delete,put
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String list() {
+        return "list";
+    }
+
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public String save() {
+        return "SAVE";
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+    public String update() {
+        return "UPDATE";
+    }
+
+    @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
+    public String remove() {
+        return "remove";
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////
+
+package com.example.springrest.customer;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(value = "/api")
+public class EmployeeController {
+
+    //request -get,post,delete,put
+
+//    @RequestMapping(value = "/list", method = RequestMethod.GET)
+//    public String list() {
+//        return "list";
+//    }
+//
+//    @RequestMapping(value = "/save", method = RequestMethod.POST)
+//    public String save() {
+//        return "SAVE";
+//    }
+//
+//    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+//    public String update() {
+//        return "UPDATE";
+//    }
+//
+//    @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
+//    public String remove() {
+//        return "remove";
+//    }
+    //   @RequestMapping(value = "/list", method = RequestMethod.GET)
+//    public String list() {
+//        return "list";
+//    }
+//
+//    @RequestMapping(value = "/save", method = RequestMethod.POST)
+//    public String save() {
+//        return "SAVE";
+//    }
+//
+//    @RequestMapping(value = "/update", method = RequestMethod.PUT)
+//    public String update() {
+//        return "UPDATE";
+//    }
+//
+//    @RequestMapping(value = "/remove", method = RequestMethod.DELETE)
+//    public String remove() {
+//        return "remove";
+//    }
+
+    //
+    @GetMapping(value = "/list")
+    @ResponseBody
+    public ResponseEntity<String> list() {
+        return ResponseEntity.status(200).body("Hello");
+    }
+
+    @PostMapping(value = "/save", produces = {"application/json", "application/xml"}, consumes = {"application/json", "application/xml"})
+    public ResponseEntity<Customer> save(@RequestBody Customer customer) {
+        System.out.println(customer);
+        return ResponseEntity.status(200).body(customer);
+    }
+
+    @PutMapping(value = "/update")
+    public String update() {
+        return "UPDATE";
+    }
+
+    @DeleteMapping(value = "/remove")
+    public String remove() {
+        return "remove";
+    }
+
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+HATEOAS:
+Hypermedia as the Engine of Application State (HATEOAS) is a component of the REST application architecture that distinguishes it from other network application architectures.
+
+if i have built a rest api for some resources,
+
+ if i share that rest api to other developers / team /company
+
+ They will ask us to share documentation.
+
+document says that How to query rest api
+  
+is it necessary to prepare documentation?.
+
+if any web site , do you need any documentation for how to browse that website?
+
+ In general , we dont need, we use hyper links to navigate to see the information.
+
+HATEOAS is kind of self document model along with data, which guides how to use REST API
+
+
+EG:
+GET /accounts/12345 HTTP/1.1
+Host: bank.example.com
+Accept: application/vnd.acme.account+json
+...
+
+Response:
+
+HTTP/1.1 200 OK
+Content-Type: application/vnd.acme.account+json
+Content-Length: ...
+
+{
+    "account": {
+        "account_number": 12345,
+        "balance": {
+            "currency": "usd",
+            "value": 100.00
+        },
+        "links": {
+            "deposit": "/accounts/12345/deposit",
+            "withdraw": "/accounts/12345/withdraw",
+            "transfer": "/accounts/12345/transfer",
+            "close": "/accounts/12345/close"
+ 
+        }
+  }
+
+{
+    "account": {
+        "account_number": 12345,
+        "balance": {
+            "currency": "usd",
+            "value": 100.00
+        },
+        "links": {
+            "self": "/accounts/12345"         
+ 
+        }
+  }
+
+
+/accounts/12345/deposit
+/accounts/12345/withdraw
+
+{
+  "_links" : {
+    "self" : {
+      "href" : "https://myhost/people/42"
+    }
+  },
+  "firstname" : "Dave",
+  "lastname" : "Matthews"
+}
+
+HATEOS Implementations:
+
+RESTEASY HATEOS implemenations
+
+Spring boot implementation:
+..........................
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+
+
+1.Add entity Model -Resource
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class Greeting extends RepresentationModel<Greeting> {
+
+	private final String content;
+
+	@JsonCreator
+	public Greeting(@JsonProperty("content") String content) {
+		this.content = content;
+	}
+
+	public String getContent() {
+		return content;
+	}
+}
+
+2.Controller
+package com.example.resthateoas;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@RestController
+public class GreetingController {
+
+	private static final String TEMPLATE = "Hello, %s!";
+
+	@RequestMapping("/greeting")
+	public ResponseEntity<Greeting> greeting(
+		@RequestParam(value = "name", defaultValue = "World") String name) {
+
+		Greeting greeting = new Greeting(String.format(TEMPLATE, name));
+
+		greeting.add(linkTo(methodOn(GreetingController.class).greeting(name)).withSelfRel());
+
+		return new ResponseEntity<>(greeting, HttpStatus.OK);
+	}
+}
+
+http://localhost:8080/greeting
+
+{
+content: "Hello, World!",
+_links: {
+self: {
+href: "http://localhost:8080/greeting?name=World"
+}
+}
+}
+http://localhost:8080/greeting?name=World
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring Data:
+............
+  Data Integration projects
+
+
+Spring Data JDBC
+  -jdbc abstraction.
+				     Spring Data JDBC
+					 |
+				        jdbc
+					  |
+				        RDBMS
+
+Spring Data JPA
+   -JPA abstraction
+
+                                     Spring Data JPA
+					 |
+				         JPA
+					  |
+				       Hibernate
+					  |
+					RDBMS
+
+
+Repository layer : DAO - @Repository
+
+Spring provides interface model, you dont need provide implemenation
+
+Repository interface
+
+Any data models works on entity.
+
+ Spring generates repositories based on entities.
+
+Spring data jpa provides all basic curd operations.
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring-data jpa works based on default inmememory database:
+
+               	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+
+
+application.properties
+spring.datasource.driver-class-name=org.h2.Driver
+
+
+Enity creation:
+
+
+@Setter
+@NoArgsConstructor
+@ToString
+@XmlRootElement()
+@Entity
+public class Customer {
+    @Id
+    @GeneratedValue
+    private int id;
+    private String firstName;
+    private String lastName;
+    private String street;
+    private String city;
+    private String state;
+    private String zip;
+    private String country;
+}
+
+How to implement Respository:
+
+old way: todo: it may not run
+
+interface CustomerRepository {
+	Customer save(Customer customer);
+	List<Customer> findAll();
+}
+@Repository
+class CustomerRepositoryImpl implements  CustomerRepository{
+	@PersistenceContext
+	private EntityManager em;
+	@Override
+	public Customer save(Customer customer) {
+		 em.persist(customer);
+		return new Customer();
+	}
+
+	@Override
+	public List<Customer> findAll() {
+		return null;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+Way 2:
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
+package org.springframework.data.repository;
+
+import org.springframework.stereotype.Indexed;
+
+@Indexed
+public interface Repository<T, ID> {
+}
+
+//interface CustomerRepository extends CrudRepository<Customer, Long> {
+//
+//}
+
+interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+CommandLineRunner:
+  It is bean having run method: which is eq- factory global cylcle hook.
+ It is used to initalize application specific data eg: adding dummy /test data to tables.
+
+    @Component
+    public class MyRunner implements  CommandLineRunner{
+
+        @Override
+        public void run(String... args) throws Exception {
+           //Todo: any app gloabl data ; like create tables, insert mock data
+        }
+    }
+
+    @Bean
+    CommandLineRunner runner(CustomerRepository repository) {
+        return args -> {
+            Customer customer = new Customer();
+            customer.setFirstName("Subramanian");
+            customer.setLastName("Murugan");
+            customer.setCity("Coimbatore");
+            customer.setState("Tamil nadu");
+            customer.setStreet("10th street");
+            customer.setZip("6422027");
+            customer.setCountry("India");
+
+            Customer customer1 = new Customer();
+            customer1.setFirstName("Ram");
+            customer1.setLastName("Murugan");
+            customer1.setCity("Coimbatore");
+            customer1.setState("Tamil nadu");
+            customer1.setStreet("10th street");
+            customer1.setZip("6422027");
+            customer1.setCountry("India");
+
+            List<Customer> customers = Arrays.asList(customer, customer1);
+            customers.forEach(customerEntity -> {
+                repository.save(customerEntity);
+            });
+            repository.findAll().forEach(System.out::println);
+        };
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+package com.example.springrest;
+
+import com.example.springrest.entity.Customer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+
+//interface CustomerRepository extends CrudRepository<Customer, Long> {
+//
+//}
+
+//interface CustomerRepository {
+//	Customer save(Customer customer);
+//	List<Customer> findAll();
+//}
+//@Repository
+//class CustomerRepositoryImpl implements  CustomerRepository{
+//	@PersistenceContext
+//	private EntityManager em;
+//	@Override
+//	public Customer save(Customer customer) {
+//		 em.persist(customer);
+//		return new Customer();
+//	}
+//
+//	@Override
+//	public List<Customer> findAll() {
+//		return null;
+//	}
+//}
+interface CustomerRepository extends JpaRepository<Customer, Long> {
+
+}
+
+@RestController
+@RequestMapping("/api")
+class CustomerController {
+    @Autowired
+    CustomerRepository repository;
+
+    @GetMapping("/customers")
+    public Collection<Customer> getCustomers() {
+        return this.repository.findAll();
+    }
+}
+
+@SpringBootApplication
+public class SpringRestApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringRestApplication.class, args);
+    }
+//
+//    @Component
+//    public class MyRunner implements  CommandLineRunner{
+//
+//        @Override
+//        public void run(String... args) throws Exception {
+//           //Todo: any app gloabl data ; like create tables, insert mock data
+//        }
+//    }
+    @Bean
+    CommandLineRunner runner(CustomerRepository repository) {
+        return args -> {
+            Customer customer = new Customer();
+            customer.setFirstName("Subramanian");
+            customer.setLastName("Murugan");
+            customer.setCity("Coimbatore");
+            customer.setState("Tamil nadu");
+            customer.setStreet("10th street");
+            customer.setZip("6422027");
+            customer.setCountry("India");
+
+            Customer customer1 = new Customer();
+            customer1.setFirstName("Ram");
+            customer1.setLastName("Murugan");
+            customer1.setCity("Coimbatore");
+            customer1.setState("Tamil nadu");
+            customer1.setStreet("10th street");
+            customer1.setZip("6422027");
+            customer1.setCountry("India");
+
+            List<Customer> customers = Arrays.asList(customer, customer1);
+            customers.forEach(customerEntity -> {
+                repository.save(customerEntity);
+            });
+            repository.findAll().forEach(System.out::println);
+        };
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MYSQL and Spring Boot:
+......................
+
+1.Mysql should up and running.
+
+2.<dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <scope>runtime</scope>
+</dependency>
+
+3.basic configurations in application.properties
+spring.jpa.hibernate.ddl-auto=update
+spring.datasource.url=jdbc:mysql://localhost:3306/classicmodels
+spring.datasource.username=root
+spring.datasource.password=root
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.org.hibernate.type=TRACE
+
+4.Enity
+package com.example.accessingdatamysql;
+
+
+import lombok.Getter;
+import lombok.Setter;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+@Getter
+@Setter
+public class Customers {
+    @Id
+    @GeneratedValue
+    @Column(name = "customernumber")
+    private Integer customerNumber;
+    @Column(name = "customername")
+    private String customerName;
+    @Column(name = "city")
+    private String city;
+    @Column(name = "state")
+    private String state;
+    @Column(name = "creditlimit")
+    private double creditLimit;
+
+}
+
+5.Repository
+package com.example.accessingdatamysql;
+
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
+
+import java.util.List;
+
+public interface CustomerRepository extends JpaRepository<Customers, Integer> {
+    //custom query api
+    List<Customers> findByCustomerName(String name);
+}
+
+6.Query : 
+
+6.1.All records
+    @GetMapping(path = "/all/employees")
+    public @ResponseBody
+    Iterable<Customers> getAllCustomers() {
+        // This returns a JSON or XML with the users
+        return customerRepository.findAll();
+    }
+
+
+6.2.Loading only limited records : paganation:
+    //http://localhost:8080/demo/all/employees/howmany?start=0&end=5
+    @GetMapping(path = "/all/employees/howmany")
+    public @ResponseBody
+    Iterable<Customers> getCustomersByPage(@RequestParam int start, @RequestParam int end) {
+        // This returns a JSON or XML with the users
+        //return employeeRepository.findAll();
+        Pageable firstPageWithTwoElements = PageRequest.of(start, end);
+        return customerRepository.findAll(firstPageWithTwoElements).getContent();
+    }
+
+6.3.if you want sorting.
+
+    //http://localhost:8080/demo/all/employees/howmany/sorting?start=0&end=5
+    @GetMapping(path = "/all/employees/howmany/sorting")
+    public @ResponseBody
+    Iterable<Customers> getCustomersByPageWithSorting(@RequestParam int start, @RequestParam int end) {
+        // This returns a JSON or XML with the users
+        //return employeeRepository.findAll();
+        Pageable firstPageWithTwoElements = PageRequest.of(start, end, Sort.by("customerName").descending());
+        return customerRepository.findAll(firstPageWithTwoElements).getContent();
+    }
+
+6.4.findByName
+@GetMapping(path = "/all/employees/name")
+    public @ResponseBody
+    Iterable<Customers> findByName(@RequestParam String name) {
+        // This returns a JSON or XML with the users
+        return customerRepository.findByCustomerName(name);
+    }
+
+6.5 find by name and id
+ //find by name
+    @GetMapping(path = "/all/employees/name")
+    public @ResponseBody
+    Iterable<Customers> findByName(@RequestParam String name) {
+        // This returns a JSON or XML with the users
+        return customerRepository.findByCustomerName(name);
+    }
+
+    @GetMapping(path = "/all/employees/{id}")
+    public @ResponseBody
+    Customers findById(@PathVariable Integer id) {
+        System.out.println(id);
+        // This returns a JSON or XML with the users
+        return customerRepository.findById(id).orElse(new Customers());
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Swagger and Spring boot Integration:
+....................................
+
+Swagger is one the API Testing tool, used for api testing.
+
+
+1.Add dependency:
+.................
+<dependency>
+   <groupId>io.springfox</groupId>
+   <artifactId>springfox-swagger2</artifactId>
+   <version>2.7.0</version>
+</dependency>
+<dependency>
+   <groupId>io.springfox</groupId>
+   <artifactId>springfox-swagger-ui</artifactId>
+   <version>2.7.0</version>
+</dependency>
+
+2.Enable Swagger and create Some Basic bean
+
+
+package com.example.accessingdatamysql;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+@SpringBootApplication
+@EnableSwagger2
+public class AccessingDataMysqlApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(AccessingDataMysqlApplication.class, args);
+	}
+
+	@Bean
+	public Docket swagger() {
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.example.accessingdatamysql")).build();
+	}
+}
+
+Testing:
+......
+http://localhost:8080/swagger-ui.html
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MicroServices:
+..............
+
+What is is Micro Service?
+
+ Micro -smaller
+ Service - Domain Functionality.
+
+Building enterprise application consists of various domains
+ eg
+  order
+  customer
+  products
+  items
+  accounts
+  payments
+
+App = {all domains}
+
+App can be written in any pl.
+
+Java Application:
+ -EAR- Packing model
+     EAR is deployment unit.
+The whole app is packed as single EAR Package and deployed on app servers(weblogic,jboss) in center centers.
+
+ EAR =  jars + wars
+
+ WAR  = only contains web components
+ jar  = contains back end code - ejb/spring beans,adaters,utitlies.
+
+This architecture was good until Agile was introduced.
+
+Agile software models brought new software development cycles - customer is first, speedy delivery
+,dont wait until the whole app is ready, build part by part and delivery to customers.
+
+
+Drawbacks:
+ -high down time
+ -takes longer duration for delivery
+ -Technology lock : bottleneck
+   if i want to build different languages/technologies/database
+  You have to bend for technology stack only for not domain.
+ -Testing
+   integration test is very complex,because of uncompleted modules.
+ -Deployment
+    -Apps are deployed on single server 
+    -Challanges in scallability
+       -Horizontal - increase software
+       -Verticle   - increase hardwares
+    single app must be deployed in a cluster of machines
+
+
+
+
+ The above model is called monolithic.
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+New Architecture:
+
+ ->Micro service Architecture Solves /proposes ideas /patterns to build modern agile ready software.
+
+1.Domain
+ Design application based on "Domain driven design".
+
+According to domain driven:
+............................
+Application should be broken based on  biz domains -  Order,Customers,Products.
+
+Each Biz domain - Order 
+ ->must be dev,test,deployed indendantly.
+if you do so, you need a team of people has to collabrate each other
+ 
+Peoples in Micservices
+
+ ->Stack holders - Clients 
+ ->Developers
+ ->Testers
+ ->Operation teams- dev ops enginers
+
+Tech stack : Java - Spring Boot 
+ 
+  -dev -Spring boot
+  -test - BDD,J......
+  -Operations -  containers -dockers, cloud, 
+
+
+Introduction automation:
+  how to automate these process - CI - CD
+
+Order |  stackholder---dev---test---deploy ---->Contin
+
+ - Technology
+     - Stack holder -cucumber
+    ---CI---Source code repos- git,svn,gitbucket.....
+     - dev --- spring
+     - test
+     - deloy
+The process will be repeated for all modules indepandenly.
+
+In Microserives , each smaller application is called "Service" (facility)
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Applications(Services) interaction is complex
+  Why
+   Applications are running independently
+
+->Communication among apps(Services):
+    -Communication patterns and styles
+
+Why should we do communication?
+  data- Exchange of data
+
+Patterns:
+   1.Direct -sync or async via transporter - TCP/HTTP/SMTP/SOAP.....
+        
+   OrderApp --------talks to ----- ProductApp
+     
+Drawbacks of this pattern:
+
+ 1.1.OrderApp must know the network location of ProductApp
+   Network location in cloud env is highly dynamic - dynamic port
+      - ip and port address
+//////////////////////////////////////////////////////////////////////////////
+
+  2.Via MiddleMan-Registery Servers- Service Registry and Discovery.
+
+
+Sevice Registry:
+
+->It is data base /Data store
+  Stores Resources - Service informations
+->It is key-value pair models - NOSQL Based
+
+Service registry is not new concept.
+  -DNS servers
+  -Naming servers
+etc.....
+
+Service Registry Servers:
+  
+1.Apache ZooKeeper
+2.Consul
+3.APACHE IGNITE
+4.Netflix Eureka
+etc.......
+
+Discovery:
+ It is process of lookup of services from servers.
+
+Advantages:
+
+ 1.Client Application and Provider Applicaiton dont need to talk directly.
+ 2.Client Apps dont need to query by extact port and domain name rather than , service name.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Application and data Exchange:
+..............................
+
+Different apps(services) can exchange data using data interchange formats
+ -JSON,Avro,Msgpack,Thrift ,XML, Buffer.....
+
+Different apps(services) can communicate via TCP,HTTP,GRPC
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+How Services Interaction pattern?
+ 
+1. Object(Service) to Object(Service) interaction on same runtime(JVM).
+     -method call - local - local method call.
+
+public class OrderService {
+    @Autowired
+    private InventoryService inventoryService;
+
+    public String update() {
+        return inventoryService.update();
+    }
+}
+package com.example.accessingdatamysql;
+
+public class InventoryService {
+
+    public String update() {
+        return "Updated";
+    }
+}
+
+2.Distributed/Remote Object interaction.
+
+RPI / RPC - Remote Procedure Call /Invocation
+
+Implementation:
+REST - Using HTTP protocal
+gRPC - TCP
+Apache Thrift -TCP
+
+  It is in general sync pattern, now a days we can in async ways.
+
+
+3.Messaging
+  Objects/services can exchange data using async , loosly couple way
+  MOM-Style
+Apache Kafka
+RabbitMQ
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+MicroServices are subject to fail: Failures : Resilence
+
+
+Our Expectation is always  when a service calls b service, the result /response must come.
+but i reality this is not true always.
+
+
+when we call service b from service a
+
+ 1.Service may have been down
+ 2.Service may be slow
+ 3.Service may throw Exception/Error
+
+Service is failed no problem , we need to select alternate plans
+
+                              "Resilence Patterns"
+
+
+1.Circuit Breaker
+2.Timeout
+3.Retry
+4.BulkHead
+////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Deployments:Deployment patterns
+................................
+
+Multiple service instances per host
+Service instance per host
+Service instance per VM
+Service instance per Container
+Serverless deployment
+Service deployment platform
+
+
+Scalablity:
+...........
+
+ -Scaling means , increasing or decreasing -  up and down resources based on load/requirement.
+
+Types of scalability:
+
+
+Objective:
+ -To manage traffic
+ -To manage failures
+
+ 1.Verticle scalablity
+     -increase hardware resources based on load
+ -Proxy servers - Load Balancers
+
+2.Horziontal scaling
+   - increase software resources.
+
+Software Horzintal scalling
+
+ Multi instance on single host / single container/VM
+
+                                           ServiceB-P1
+  Service A--LoadBalancer----------------| ServiceB-P2
+                                           ServiceB-P3
+
+ 
+     Here we have scaled ServiceB into three machines
+  Now service A need to talk any of the the services. 
+ 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Microservice Implmentation on Java /JVM:
+........................................
+
+Java Implmentation:
+
+1.Spring Cloud on Spring Boot
+
+What is SPring cloud?
+Spring Cloud provides tools for developers to quickly build some of the common patterns in distributed systems.
+
+1.Distributed/versioned configuration
+
+2.Service registration and discovery
+
+3.Routing
+
+4.Service-to-service calls
+
+5.Load balancing
+
+6.Circuit Breakers
+
+7.Global locks
+
+8.Leadership election and cluster state
+
+9.Distributed messaging
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Spring Supports various infrasture tools to build Micro services
+
+ -infra tools provided by thrid parties - apache,netflix,.....
+
+Spring Team(Pivtol) has technology partner ship with various tools vendors , who provides starter/abstraction packages..
+
+Spring very closly working with netflix and first implementation also netflix.....
+
+Spring Cloud Netflix:
+  Spring Cloud Netflix provides Netflix OSS integrations for Spring Boot apps through autoconfiguration and binding to the Spring Environment and other Spring programming model idioms.
+
+
+ SpringBootApplication -------NetFlix Adapters--------Netflix Components(servers,tools)
+
+ With a few simple annotations you can quickly enable and configure the common patterns inside your application and build large distributed systems with battle-tested Netflix components.
+
+The patterns provided include 
+
+1.Service Discovery (Eureka)
+2.Circuit Breaker (Hystrix)
+3.Intelligent Routing (Zuul) 
+4.Client Side Load Balancing (Ribbon)
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Use case 1 : Create Three Application
+
+1.Service Discovery/Registry Server
+2.hello-service App
+3.hello-webclient-service App.
+
+hello-service app expose an end point
+
+hello-webclient-service app consumes that end point
+
+both services are talking via service registry.
+
+///////////////////////////////////////////////////////////////////////////////////////////
+
+Steps:
+
+1.
+@SpringBootApplication
+@EnableEurekaServer
+public class ServiceRegisteryApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ServiceRegisteryApplication.class, args);
+	}
+
+}
+2.application.properties
+
+server.port=8761
+eureka.client.register-with-eureka=false
+eureka.client.fetch-registry=false
+logging.level.com.netflix.eureka=OFF
+logging.level.com.netflix.discovery=OFF
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Services:
+
+1.hello-service
+
+	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+
+2.application.properties
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+spring.application.name=hello-service
+server.port=3000
+
+3.service code
+
+package com.hello;
+
+public class Hello {
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+
+package com.hello;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.atomic.AtomicLong;
+
+@RestController
+public class HelloController {
+    private AtomicLong counter = new AtomicLong();
+
+    @GetMapping("/hello")
+    public Hello getHelloWordObject() {
+        Hello hello = new Hello();
+        hello.setMessage("Hi there! you are number " + counter.incrementAndGet());
+        return hello;
+    }
+}
+
+
+3.hello-webclient-service
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
