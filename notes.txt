@@ -2634,34 +2634,323 @@ public class HelloWebClientController {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Router and Filter: Zuul
+........................
+
+Servlet/SpringMVC:
+................
+
+Filter /Interceptor:
+
+  It is logic gets executed before any request processing starts
+
+
+Client ---request---/api/something----------|filter---filter--filter--|requestProcessing logic starts
+
+if we want the same concept for mircoservice architecture, that is called as "GateWay/EdgeService/LoadBalancer / Routers&Filters"
 
 
 
+Embedded Zuul Reverse Proxy
+.............................
+
+Spring Cloud has created an embedded Zuul proxy to ease the development of a common use case where a UI application wants to make proxy calls to one or more back end services.
 
 
+This feature is useful for a user interface to proxy to the back end services it requires, avoiding the need to manage CORS and authentication concerns independently for all the back ends.
+
+To enable it, annotate a Spring Boot main class with @EnableZuulProxy. Doing so causes local calls to be forwarded to the appropriate service. By convention, a service with an ID of users receives requests from the proxy located at /users (with the prefix stripped). The proxy uses Ribbon to locate an instance to which to forward through discovery. All requests are executed in a hystrix command, so failures appear in Hystrix metrics. Once the circuit is open, the proxy does not try to contact the service.
 
 
+Implementation:
+
+1.Zull is WebApplication only
+
+Create SpringBoot App, add 
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
+</dependency>
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+2.Enable Zuul
+@EnableZuulProxy
+@SpringBootApplication
+public class RoutingAndFilteringGatewayApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(RoutingAndFilteringGatewayApplication.class, args);
+  }
+
+  @Bean
+  public SimpleFilter simpleFilter() {
+    return new SimpleFilter();
+  }
+
+}
+
+Filter Code :
+ if you want to write any request processing logic, 
+
+Types of filters:
+
+1.pre filter
+2.post filter
+3.route filter
+4.error filter
+
+Simple Filter code:
 
 
+import com.netflix.zuul.ZuulFilter;
+
+public class ErrorFilter extends ZuulFilter {
+
+	@Override
+	public String filterType() {
+		return "error";
+	}
+
+	@Override
+	public int filterOrder() {
+		return 0;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() {
+		System.out.println("Using Route Filter");
+
+		return null;
+	}
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Gateway Code:
+package com.example.routingandfilteringgateway;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
+import org.springframework.context.annotation.Bean;
+import com.example.routingandfilteringgateway.filters.pre.SimpleFilter;
+
+@EnableZuulProxy
+@SpringBootApplication
+public class RoutingAndFilteringGatewayApplication {
+
+  public static void main(String[] args) {
+    SpringApplication.run(RoutingAndFilteringGatewayApplication.class, args);
+  }
+
+  @Bean
+  public SimpleFilter simpleFilter() {
+    return new SimpleFilter();
+  }
 
 
+}
 
+Filter
+package com.example.routingandfilteringgateway.filters.pre;
+
+import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+
+public class SimpleFilter extends ZuulFilter {
+
+    private static Logger log = LoggerFactory.getLogger(SimpleFilter.class);
+
+    @Override
+    public String filterType() {
+        return "pre";
+    }
+
+    @Override
+    public int filterOrder() {
+        return 1;
+    }
+
+    @Override
+    public boolean shouldFilter() {
+        return true;
+    }
+
+    @Override
+    public Object run() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        HttpServletRequest request = ctx.getRequest();
+
+        log.info(String.format("%s request to %s", request.getMethod(), request.getRequestURL().toString()));
+
+        return null;
+    }
+
+}
+zuul.routes.books.url=http://localhost:8090
+zuul.routes.mybooks.url=http://localhost:8090
+zuul.routes.booking.url=http://localhost:8090
+ribbon.eureka.enabled=false
+server.port=8080
+
+////////////////////////////////////////////////////////
+
+Consumer service:
+package com.example.routingandfilteringbook;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@SpringBootApplication
+public class RoutingAndFilteringBookApplication {
+
+  @RequestMapping(value = "/available")
+  public String available() {
+    return "Spring in Action";
+  }
+
+  @RequestMapping(value = "/checked-out")
+  public String checkedOut() {
+    return "Spring Boot in Action";
+  }
+
+  public static void main(String[] args) {
+    SpringApplication.run(RoutingAndFilteringBookApplication.class, args);
+  }
+}
+
+application.properties
+spring.application.name=book
+server.port=8090
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Resilance : Fault Management:
+.............................
+
+Circuit Breaker:
+
+  Hystrix clients can be built with a simple annotation-driven method decorator
+
+Hystrix is  a netflix component.
+ 
+Falut can be :
+
+-Service is not reachable- may be down
+-Service is slow
+-Service throwing exception.
+
+Circuite Breaker will open a path to provide alternate solution to the clients.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Use case
+
+Service 1 --------------------------------Service 2 -----talking to database
+ 
+class Service1 {
+
+private Service2 service2
+
+  public void getData(){
+  
+    
+    try{
+      //risky code : error 
+      Data = service2.getData();
+    }
+    catch(Exception es){
+       //handle it.and give some alternate result , dont stop the application.
+    }
+  }
+
+}
 
  
+class Service2{
+
+public Something getData(){
+  
+     return SOmething;
+  }
+
+}
+
+Microservice reseliance patterns are like try catch only.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Steps:
+......
+Caller App-Consume service
+
+Callee App - provide Service
 
 
+1.
+<dependency>
+	<groupId>org.springframework.cloud</groupId>
+	<artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+</dependency>
 
 
+2.@EnableCircuitBreaker
 
 
+3.Write Service and wrapp risky code
+
+  @HystrixCommand(fallbackMethod = "reliable")
+  public String readingList() {
+	URI uri = URI.create("http://localhost:8090/recommended");
+	return this.restTemplate.getForObject(uri, String.class);
+  }
+
+ public String reliable() {
+	return "Cloud Native Java (O'Reilly)";
+  }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Configuration for Fault:
+
+ @HystrixCommand(fallbackMethod = "reliable",
+  commandProperties = {
+          @HystrixProperty(name = "circuitBreaker.requestVolumeThreshold", value = "2"),
+          @HystrixProperty(name = "metrics.rollingStats.timeInMilliseconds", value = "500"),
+          @HystrixProperty(name = "circuitBreaker.errorThresholdPercentage", value = "1"),
+          @HystrixProperty(name = "circuitBreaker.sleepWindowInMilliseconds", value = "1000")
+
+  })
 
 
+States of CircuitBreak:
 
+1.closed
+2.open
+3.half open
 
+if cb is in
+1.closed :
 
+  Service calls going smoothly - no error at all
 
+2.open 
+  service calls going wrongly
 
-
+ When cb is open state, we have to say what todo?
+    - fallback
 
 
 
