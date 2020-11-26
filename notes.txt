@@ -2258,29 +2258,382 @@ public class HelloController {
 3.hello-webclient-service
 
 
+Steps:
+application.properties
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+spring.application.name=hello-webclient-service
+server.port=3001
 
 
 
+4.How to talk to Service-hello-Service : service to service calls
+
+Pattern: Service call patterns
+1.REST 
+2.Messaging
+3.RPI/RPC -gRpc,RSocket...
+
+REST:
+How rest apis can talk each other.
+
+Spring Boot implemetation
+
+1.RestTemplate
+  RestTemplate is a synchronous client to perform HTTP requests. It is the original Spring REST client and exposes a simple, template-method API over underlying HTTP client libraries.
+
+2.WebClient
+  WebClient is a non-blocking, reactive client to perform HTTP requests. It was introduced in 5.0 and offers a modern alternative to the RestTemplate, with efficient support for both synchronous and asynchronous, as well as streaming scenarios.
+
+3.Spring Cloud OpenFeign
 
 
 
+RestTemplate
+
+ -It is spring bean, so you have to create,
+
+ you can create inside config file or inside main file
+
+ @Bean
+  public RestTemplate resttemplate(){
+      return new RestTemplate();
+ }
+getForObject :Retrieves a representation via GET.
+
+getForEntity:Retrieves a ResponseEntity (that is, status, headers, and body) by using GET.
+
+
+@SpringBootApplication
+@EnableEurekaClient
+public class HelloWebclientServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(HelloWebclientServiceApplication.class, args);
+	}
+
+	@Bean
+	RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+}
+package com.hello.client;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+@RestController
+public class HelloWebClientController {
+    @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    //call api using rest template
+    @GetMapping(value="/client")
+    public ResponseEntity<Hello> helloV1() {
+        String url = "http://localhost:3000/hello";
+        Hello helloResponse = restTemplate.getForObject(url, Hello.class);
+        return ResponseEntity.status(200).body(helloResponse);
+    }
+}
+
+ String url = "http://localhost:3000/hello";
+
+The above code works with hardcoded urls
+
+What if the url changes,particulary port changes
+
+incase of Dynamic Ports, ports randomly assinged by cloud/containers...
+
+Here one more problem is , we have not query the service with help of "Service Regisery"
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+How to change Url syntax:
+http://service-name/urlpath
+
+here there is no port; dynamic port.
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Hello-Service : configuration:
+..............................
+application.properties
+eureka.client.serviceUrl.defaultZone=http://localhost:8761/eureka/
+spring.application.name=hello-service
+server.port=${PORT:0}
+eureka.instance.instance-id=${spring.application.name}:${spring.application.instance_id:${random.value}}
+
+
+How to Query instance information from the service discovery?
+ instance information such as url,host,service.....
+
+    @GetMapping(value = "/client/dynamic")
+    public ResponseEntity<Hello> helloV2() {
+        List<ServiceInstance> instances = discoveryClient.getInstances("hello-service");
+        Hello helloResponse = null;
+        if (instances != null && instances.size() > 0) {
+            ServiceInstance serviceInstance = instances.get(0);
+            String url = serviceInstance.getUri().toString();
+            System.out.println(serviceInstance.getHost() + " " + serviceInstance.getPort() + " " + serviceInstance.getServiceId());
+            System.out.println(serviceInstance.getInstanceId());
+            System.out.println(url);
+            url = url + "/hello";
+            helloResponse = restTemplate.getForObject(url,
+                    Hello.class);
+        }
+        return ResponseEntity.status(200).body(helloResponse);
+
+    }
+
+3.using feign:
+
+//hello-service is name of the service from HelloService
+@FeignClient("hello-service")
+public interface HelloServiceFeignClient {
+    @GetMapping("/hello")
+    ResponseEntity<Hello> hello();
+}
+
+    @Autowired
+    private HelloServiceFeignClient feignClient;
+@GetMapping(value = "/client/feign")
+    public ResponseEntity<Hello> helloV3() {
+        Hello helloResponse = feignClient.hello().getBody();
+        return ResponseEntity.status(200).body(helloResponse);
+    }
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Scallability And Load balancing:
+.................................
+How to scale - increase/ decrease our service instances? Multi instances
+
+Use case : run multiple copy of the hello-service.
+
+                                                                   | -instance1
+ End Client----------|ClientMicroService-----looks up Discovery ---| -instance2
+                                                                   | -instance3
+
+How to run mutiple instances of same service eg running multiple copy of hello-service?
+
+->running multiple java applications using java -jar 
+->running via dockers
+
+
+Testing:
+
+Steps
+
+1.mvn clean package
+
+2.open two cmd
+
+>Run discovery server
+
+>java -jar target/hello-service-0.0.1-SNAPSHOT.jar
+
+>java -jar target/hello-service-0.0.1-SNAPSHOT.jar
+
+
+Load Balancer:
+..............
+One of the most prominent reasons of evolution from monolithic to microservices architecture is horizontal scaling.
+
+It is required in modern day applications to improve user experience in the case of higher traffic for a particular service.
+
+We create multiple instances of the service in order to handle the large traffic of requests.
+
+But if the requests are not distributed among the instances effectively, then horizontal scaling is of no use
+
+Load balancing refers to efficiently distributing the incoming network traffic across a group of backend servers (multiple instances of the service).
+
+Types of load-balancing
+
+Load balancing can be of two types:
+
+1.Server-side Load Balancing
+
+2.Client-side Load Balancing
 
 
 
+1. Server-side Load Balancing
+
+Hardware load balancer:
+.......................
+
+  In Server-side load balancing, the instances of the service are deployed on multiple servers and then a load balancer is put in front of them. It is generally a hardware load balancer.
+
+All the incoming requests traffic firstly comes to this load balancer acting as a middle component.
+
+It then decides to which server a particular request must be directed to based on some algorithm.
+
+Software load balancer:
+
+   Software load balancer is front gate to the application(microservices).
+   Any ui-browser/mobile will talk to load balancer , which decides where to go.
+   It is other wise called "Edge Service" or API Gateway.
+   Spring cloud provides "Netflix Zull" or Spring cloud Gateway.   
+
+Disadvantages of Server-side load balancing
+
+Server side load balancer acts as a single point of failure as if it fails, all the instances of the microservice becomes inaccessible as only load balancer has the list of servers.
+
+Since each microservice will have a separate load balancer, the overall complexity of the system increases and it becomes hard to manage.
+
+The network latency increases as the number of hops for the request increases from one to two with the load balancer, one to the load balancer and then another from load balancer to the microservice.
+
+
+Disadvantages of Server-side load balancing
+Server side load balancer acts as a single point of failure as if it fails, all the instances of the microservice becomes inaccessible as only load balancer has the list of servers.
+
+Since each microservice will have a separate load balancer, the overall complexity of the system increases and it becomes hard to manage.
+
+The network latency increases as the number of hops for the request increases from one to two with the load balancer, one to the load balancer and then another from load balancer to the microservice.
 
 
 
+2. Client-side Load Balancing
+The instances of the service are deployed on multiple servers. Load balancer's logic is part of the client itself, it holds the list of servers and decides to which server a particular request must be directed to based on some algorithm. 
+
+These client side load balancers are also known as software load balancers.
 
 
+Disadvantages of Client-side load balancing
+The load balancer's logic is mixed up with the microservice code.
 
 
+Client Side load balancing:
+
+As per official website, Netflix's Ribbon is an Inter Process Communication (remote procedure calls) library with built in client side(software) load balancer and is a part of Netflix Open Source Software (Netflix OSS).
+
+Following are the features of Ribbon:
+
+Load balancing: It provides client side load balancing functionality.
+
+Fault tolerance: It can be used to determine whether the servers are up or not and can also detect those servers that are down and hence, ignore them for sending the further requests.
+
+Configurable load balancing rules: 
+
+By default ribbon uses RoundRobinRule for distributing requests among servers.
+
+In addition to it, it also provides AvailabilityFilteringRule and WeightedResponseTimeRule.
+
+We can also define our custom rules as per our needs.
+
+Eg:
+        @LoadBalanced
+	@Bean
+	RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Client Side Load Balancing:
+..........................
+
+1.main 
+package com.hello.client;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
+
+@SpringBootApplication
+@EnableEurekaClient
+@EnableFeignClients
+public class HelloWebclientServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(HelloWebclientServiceApplication.class, args);
+	}
+
+	@Bean
+	@LoadBalanced
+	RestTemplate restTemplate() {
+		return new RestTemplate();
+	}
+}
+package com.hello.client;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+@RestController
+public class HelloWebClientController {
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private HelloServiceFeignClient feignClient;
+
+    @Autowired
+    private DiscoveryClient discoveryClient;
+
+    //call api using rest template
+    @GetMapping(value = "/client/static")
+    public ResponseEntity<Hello> helloV1() {
+        String url = "http://localhost:3000/hello";
+        Hello helloResponse = restTemplate.getForObject(url, Hello.class);
+        return ResponseEntity.status(200).body(helloResponse);
+    }
+
+    @GetMapping(value = "/client/dynamic")
+    public ResponseEntity<Hello> helloV2() {
+        List<ServiceInstance> instances = discoveryClient.getInstances("hello-service");
+        Hello helloResponse = null;
+        if (instances != null && instances.size() > 0) {
+            ServiceInstance serviceInstance = instances.get(0);
+            String url = serviceInstance.getUri().toString();
+            System.out.println(serviceInstance.getHost() + " " + serviceInstance.getPort() + " " + serviceInstance.getServiceId());
+            System.out.println(serviceInstance.getInstanceId());
+            url = url + "/hello";
+            System.out.println(url);
+            helloResponse = restTemplate.getForObject(url,
+                    Hello.class);
+        }
+        return ResponseEntity.status(200).body(helloResponse);
+
+    }
+
+    @GetMapping(value = "/client/feign")
+    public ResponseEntity<Hello> helloV3() {
+        Hello helloResponse = feignClient.hello().getBody();
+        return ResponseEntity.status(200).body(helloResponse);
+    }
+
+    @GetMapping("/client/loadbalanced")
+    public ResponseEntity<Hello> loadBalanced() {
+        //accessing hello-service
+        String url = "http://hello-service/hello";
+        Hello helloResponse = restTemplate.getForObject(url, Hello.class);
+        return ResponseEntity.status(200).body(helloResponse);
+    }
 
 
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-
+Router and Filter: Zuul
 
 
 
