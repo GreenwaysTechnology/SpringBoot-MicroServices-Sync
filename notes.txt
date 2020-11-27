@@ -3306,6 +3306,351 @@ docker run -p 9090:9090 -v prometheus-config.yml:C:\\session\\spring-training\\c
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+Message Oriented Middleware Integration:
+.......................................
+Kafka:
+ -It is middleware to store information.
+ -To real time biz event informations where as database stores "things"-Employee,Order,Purchase
+
+Topic:
+  log file
+
+How to start working with kafa?
+
+-Setup kafaka
+
+-spring boot kafka integration:
+
+Spring boot uses kafaTemplates to store and read messages in real time.
+
+
+Spring Kafa integration:
+........................
+<dependency>
+  <groupId>org.springframework.kafka</groupId>
+  <artifactId>spring-kafka</artifactId>
+  <version>2.6.3</version>
+</dependency>
+
+Connecting to kafa
+
+1.ProducerConfig
+2.ConsumerCOnfig
+3.KafaTemplate
+4.KafaListerner
+
+Producer Configuration:
+package com.example;
+
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Configuration
+public class KafkaProducerConfig {
+    @Bean
+    public ProducerFactory<String, String> producerFactory() {
+        Map<String, Object> configProps = new HashMap<>();
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        return new DefaultKafkaProducerFactory<>(configProps);
+    }
+    @Bean
+    public KafkaTemplate<String, String> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
+}
+
+2.Consumer configuration:
+package com.example;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+
+@EnableKafka
+@Configuration
+public class KafkaConsumerConfig {
+    @Bean
+    public ConsumerFactory<String, String> consumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "group-id");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String>
+                factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+}
+
+
+Sending message and consuming message:
+.....................................
+package com.example;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+
+@SpringBootApplication
+public class SpringKafkaappApplication implements ApplicationRunner {
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringKafkaappApplication.class, args);
+    }
+
+    public void sendMessage(String msg) {
+        kafkaTemplate.send("x", msg);
+    }
+
+    @KafkaListener(topics = "x", groupId = "group-id")
+    public void listen(String message) {
+        System.out.println("Received Messasge in group - group-id: " + message);
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        sendMessage("Hi Welcome to Spring For Apache Kafka");
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Authentication:
+
+Security : 
+
+ Security is implemented in many places:
+
+Security is implemented via Security protocals.
+
+Protocal : set of rules and regulations to send ,authrozie data and people
+
+
+Authentication
+Authentication is about validating the identity of a client that is trying to access
+your services. It usually involves checking to see if the client has provided an existing
+user with valid credentials, such as a password. The Web has a few standardized
+protocols you can use for authentication. Java EE, specifically your servlet container,
+has facilities to understand and configure these Internet security authentication
+protocols.
+
+Authorization
+Once a client is authenticated, it will want to interact with your RESTful web service.
+Authorization is about deciding whether or not a certain user is allowed to access
+and invoke on a specific URI. For example, you may want to allow write access
+(PUT/POST/DELETE operations) for one set of users and disallow it for others.
+Authorization is not part of any Internet protocol and is really the domain of your
+servlet container and Java EE.
+
+
+Encryption
+When a client is interacting with a RESTful web service, it is possible for hostile
+individuals to intercept network packets and read requests and responses if your
+HTTP connection is not secure. Sensitive data should be protected with cryptographic
+services like SSL. The Web defines the HTTPS protocol to leverage SSL and
+encryption.
+
+Authentication
+
+Basic Authentication
+
+Basic Authentication is the simplest protocol available for performing authentication
+over HTTP. It involves sending a Base 64–encoded username and password within a
+request header to the server. The server checks to see if the username exists within its
+system and verifies the sent password. To understand the details of this protocol, let’s
+look at an example.
+Say an unauthorized client tries to access one of our secure RESTful web services:
+
+GET /customers/333 HTTP/1.1
+
+
+Since the request does not contain any authentication information, the server would
+reply with an HTTP response of:
+
+HTTP/1.1 401 Unauthorized
+WWW-Authenticate: Basic realm="CustomerDB Realm"
+
+The 401 response tells the client that it is not authorized to access the URI it tried to
+invoke on. The WWW-Authenticate header specifies which authentication protocol the client should use. In this case, Basic means Basic Authentication should be used.
+
+
+
+Digest Authentication
+
+Although not used much anymore, Digest Authentication was invented so that clients
+would not have to send clear-text passwords over HTTP. It involves exchanging a set of
+secure MD5 hashes of the username, password, operation, URI, and optionally the hash
+of the message body itself. The protocol starts off with the client invoking an insecure
+request on the server:
+
+
+Client Certificate Authentication
+When you buy things or trade stocks on the Internet, you use the HTTPS protocol to
+obtain a secure connection with the server. HTTPS isn’t only an encryption
+mechanism—it can also be used for authentication.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+Authentication involves
+
+1.Server needs to store user data - releam
+
+Client-------send user and password----------server-----against releam.
+
+Single Sign On:
+ -One user and password to access all authenticated services from application.
+
+Third party single Sign on.
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+OAuth Integration with Spring Boot:
+...................................
+
+You can use any auth provider - gmail,github.
+
+Steps:
+
+1.
+
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-oauth2-client</artifactId>
+</dependency>
+<dependency>
+   <groupId>org.springframework.boot</groupId>
+  
+<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+
+
+2.create github account, create developer account
+
+https://github.com/settings/developers
+
+2.Spring boot security configuration
+
+spring.security.oauth2.client.registration.github.client-id=82a368fcca494fe79dcf
+
+spring.security.oauth2.client.registration.github.client-secret=82a368fcca494fe79dcf
+////////////////////////////////////////////////**********//////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+Customer and order  management system.
+
+--Customer
+   
+--Order
+
+ Entity
+ service
+ Repostiry
+ Controller
+
+Customer to Order
+  reterive orderdetails
+   - all orders
+   -order by id
+   order by discount.
+
+-Discovery
+-api gateway
+-loadebalancer-clientside
+-Hystrix- falut management
+  -slow
+  -exception
+  -unavailability
+-authentication -optional
+
+-Mulitmodule spring boot project
+
+
+ Customer-Order App
+
+    <customer-service> -
+    <order-service> --
+
+ pom.xml
+
+ java -jar target/customer.app.jar
+ java -jar target/order.app.jar
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
