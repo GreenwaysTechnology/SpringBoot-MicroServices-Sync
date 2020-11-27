@@ -2951,62 +2951,359 @@ if cb is in
 
  When cb is open state, we have to say what todo?
     - fallback
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Infra Structure Compoents in Spring Cloud
+.........................................
+
+1. Distributed Configuration Management component - Spring cloud-coni
+2. Metrics,tracing,logging -(Mon) - Spring cloud sluth,zipkin,promouths
+3. Service Registry And discovery
+
+
+   
+
+1.Distributed Configuration Management.
+
+ We can store global configuration data in a central server, so that across the application we dont
+need to store data in every application.
+
+
+Config Server:
+..............
+
+->It is web server, it transfer config data via REST end points
+->Client Apps talks to web server, get config data.
+->Config server must have connected "Config Store".
+
+
+Config Store:
+............
+->Place where all distributed configurations are stored.
+
+Eg:
+ local disk file
+ git repos
+ LDap server
+ noSql severs
+
+Implementation:
+
+1.Config Server
+
+2.Regular MicroService Apps.
+
+1.Config Server : create a spring boot app
+<dependency>
+  <groupId>org.springframework.cloud</groupId>
+  <artifactId>spring-cloud-config-server</artifactId>
+</dependency>
+
+
+2.Enable Config Server
+package com.example.configurationservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.config.server.EnableConfigServer;
+
+@EnableConfigServer
+@SpringBootApplication
+public class ConfigurationServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(ConfigurationServiceApplication.class, args);
+	}
+}
+
+3.config store configuration:
+
+git: local
+
+Steps:
+
+1.create folder c:\session\example-app-config
+
+2.cd c:\session\example-app-config
+
+3.create property files
+ profile-lable.properties 
+
+test-dev.properties
+test-prod.properties
+test2-dev.properties
+test2-prod.properties
+
+
+test-dev.properties
+test.greeting=Hi developer!
+
+4.git init
+
+5.git commit -m "someproperty"
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+In config server , we need to tell, the config location.
+
+spring.cloud.config.server.git.uri=file:///C:/session/example-app-config
+
+/
+
+Testing :
+
+http://localhost:8888/test/dev
+
+**************************************************************************************************
+
+Client Side:
+............
+1.create Spring boot app
+
+	<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+	</dependency>
+
+2.add entry into property files
+spring.cloud.config.uri=http://localhost:8888
+spring.application.name=test,test2
+spring.profiles.active=dev
+
+3.Reading Property
+
+@RefreshScope
+@RestController
+class MessageRestController {
+	@Value("${test.greeting}")
+	private String message;
+	@RequestMapping("/message")
+	String getMessage() {
+		return this.message;
+	}
+}
+
+@RefreshScope : auto reloading from config server
+
+if any changes happen in config server, which reloads /refresh property value dynamically.
+//////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Distributed Tracing and Logging:
+................................
+
+Zipkin is very efficient tool for distributed tracing in microservices ecosystem. Distributed tracing, in general, is latency measurement of each component in a distributed transaction where multiple microservices are invoked to serve a single business usecase. Let’s say from our application, we have to call 4 different services/components for a transaction. Here with distributed tracing enabled, we can measure which component took how much time.
+
+Zipkin
+
+Modules
+
+1.Collector – Once any component sends the trace data arrives to Zipkin collector daemon, it is validated, stored, and indexed for lookups by the Zipkin collector.
+
+2.Storage – This module store and index the lookup data in backend. Cassandra, ElasticSearch and MySQL are supported.
+
+3.Search – This module provides a simple JSON API for finding and retrieving traces stored in backend. The primary consumer of this API is the Web UI.
+
+4.Web UI – A very nice UI interface for viewing traces.
+
+How to install Zipkin
+
+Detailed installation steps can be found for different operating system including Docker image at quickstart page. 
+
+For windows installation, just download the latest Zipkin server from maven repository and run the executable jar file using below command.
+
+java -jar zipkin-server-1.30.3-exec.jar
+
+Test zipkin location:
+
+http://localhost:9411/zipkin/
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+How api trace information is given to zipkin?
+
+
+Spring Cloud Sleuth 
+ It provides Spring Boot auto-configuration for distributed tracing.
+
+
+Sleuth
+
+Sleuth is a tool from Spring cloud family. It is used to generate the trace id, span id and add these information to the service calls in the headers and MDC, so that It can be used by tools like Zipkin and ELK etc. to store, index and process log files. As it is from spring cloud family, once added to the CLASSPATH, it automatically integrated to the common communication channels like –
+
+    requests made with the RestTemplate,WebClient, etc.
+    requests that pass through a Netflix Zuul microproxy
+    HTTP headers received at Spring MVC controllers
+    requests over messaging technologies like Apache Kafka or RabbitMQ etc.
+
+Using Sleuth is very easy. We just need to add it’s started pom in the spring boot project. It will add the Sleuth to project and so in its runtime.
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+		</dependency>
+
+Add four Apps
+
+Start deploying
+
+Test all apps
+&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
+
+Service Monitoring – Health, Hystrix, Eureka admin and Spring boot admin
+.........................................................................
+
+Spring boot and spring cloud are widely used while delivering microservices-based applications. Eventually, it has become a necessity to monitor microservices based on Spring boot applications running on different hosts. There are many tools available to monitor various health stats of these microservices.
+
+Tools:
+Spring boot admin dashboard
+Hystrix dashboard, 
+Eureka admin dashboard 
+
+
+Health Checks:
+
+Why Do we use Health Checks?
+
+A distributed system is composed of many moving parts like a database, queues, and other services. Health check functions tell us the status of our running application like whether the service is slow or not available.
+
+We also learn to predict the system health in the future by observing any anomalies in a series of metrics like memory utilization, errors, and disk space. 
+
+This allows us to take mitigating actions like restarting instances, falling back to a redundant instance, or throttling the incoming requests.
+
+Timely detection and proactive mitigation will ensure that the application is stable and minimize any impact on business functions.
+
+Apart from infrastructure and operations teams, health check metrics and insights derived from them are also becoming useful to the end-users.
+
+In an API ecosystem, for instance, with API developers, partners, and third-party developers, the health status of APIs is regularly updated and published in a dashboard, like on this Dashboard by Twitter.
+
+
+Common Health Checking Techniques:
+.....................................
+
+The simplest way of implementing a health check is to periodically check the “heartbeat” of a running application by sending requests to some of its API endpoints and getting a response payload containing the health of the system.
+
+These heartbeat endpoints are HTTP GET or HEAD requests that run light-weight processes and do not change the state of the system. The response is interpreted from either the HTTP response status or from specific fields in the response payload.
+
+Although this method can tell us if the application itself is up and running, it does not tell us anything about the services that the application depends on like a database, or another service. So a composite health check made up of the health of dependent systems aggregated together gives a more complete view.
+
+A composite health check is sometimes also called a “deep check”.
+
+A more proactive approach involves monitoring a set of metrics indicating system health. These are more useful since they give us early indications of any deteriorating health of the system giving us time to take mitigating measures.
+
+
+Adding a Health Check in Spring Boot:
+
+
+Adding the Actuator Dependency
+
+The Actuator module provides useful insight into the Spring environment for a running application with functions for health checking and metrics gathering by exposing multiple endpoints over HTTP and JMX. We can refer to the full description of the Actuator module in the Actuator Documentation.
+
+We added the actuator dependency while creating the application from the Initializr. We can choose to add it later in our pom.xml:
+
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+
+Checking Health Status Details
+
+management.endpoint.health.show-details=always
 
 
 
-      
+Sample health information
+
+{
+   "status": "UP",
+   "components": {
+    "diskSpace": {
+     "status": "UP",
+     "details": {
+      "total": 250685575168,
+      "free": 12073996288,
+      "threshold": 10485760,
+      "exists": true
+     }
+    },
+    "ping": {
+     "status": "UP"
+    }
+   }
+}
+
+Helath indicator api
+
+-by default acuator can collect only rest api metrics
+if you want to collect databse metrics.... you have to write code for code
+
+Health Indicators
+
+Spring Boot Actuator comes with several predefined health indicators like
+
+    DataSourceHealthIndicator, - SQL based databases
+    MongoHealthIndicator - mongo db health db
+    RedisHealthIndicator, -redis
+    CassandraHealthIndicator -casandra
 
 
 
+Each of them is a Spring bean that implements the HealthIndicator interface and checks the health of that component.
+
+Spring Boot automatically provides a health indicator for standard components (like a DataSource). The health check provided by a DataSource creates a connection to a database and performs a simple query, such as select 1 from dual to check that it is working.
 
 
+if you want to disable some resource health
+
+management.health.mongo.enabled=false
+////////////////////////////////////////////////////////////////////////////////////////////////////////Implementation:
+
+dependancy:
+...........
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 
 
+application.properties
 
+# Show details of health endpoint
+management.endpoint.health.show-details=always
 
+# Use "*" to expose all endpoints, or a comma-separated list to expose selected ones
+# management.endpoints.web.exposure.include=health,info 
+management.endpoints.web.exposure.exclude=
 
+# Use "*" to expose all endpoints, or a comma-separated list to expose selected ones
+management.endpoints.jmx.exposure.include=*
+management.endpoints.jmx.exposure.exclude=
+management.endpoints.web.exposure.include=health,info,prometheus
+management.health.probes.enabled=true
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Collecting api call metrics:
 
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthContributor;
+import org.springframework.boot.actuate.health.HealthIndicator;
 
+1.create a class , implement HealthIndicator, HealthContributor
 
+2.over ride health method , write how to verify.
 
+ping ip
 
+docker run -p 9090:9090 -v prometheus-config.yml:C:\\session\\spring-training\\code-examples\\spring-boot\\spring-boot-health-check\\prometheus.yml prom/prometheus
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
